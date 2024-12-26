@@ -4,8 +4,8 @@ using UnityEngine;
 [RequireComponent (typeof(FSM))]
 public class Unit : MonoBehaviour, IStatSettable
 {
-    private const string BASE_STATS_KEY = "base";
-    private const string ENGAGE_STATS_KEY = "engage";
+    public const string BASE_STATS_KEY = "base";
+    public const string ENGAGE_STATS_KEY = "engage";
 
     private Status _status;
     private FSM _fsm;
@@ -28,6 +28,8 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         _isActive = true;
 
+        IntializeStats(data);
+
         UpdateStats(BASE_STATS_KEY, data);
 
         _fsm.TransitionTo<IdleState>();
@@ -37,14 +39,17 @@ public class Unit : MonoBehaviour, IStatSettable
 
     public void OnDisable()
     {
-        ResetStats(BASE_STATS_KEY);
-        ResetStats(ENGAGE_STATS_KEY);
         _isInitialized = false;
     }
 
     public void SetActive(bool value)
     {
         _isActive = value;
+    }
+
+    public void IntializeStats(IStats stats)
+    {
+        _status.IntializeStats(stats);
     }
 
     public void ResetStats(string key)
@@ -55,6 +60,16 @@ public class Unit : MonoBehaviour, IStatSettable
     public void UpdateStats(string key, IStats stats)
     {
         _status.UpdateStats(key, stats);
+    }
+
+    public void OnHit(int damage, Unit attacker)
+    {
+        _status.OnHit(damage, attacker);
+    }
+
+    public void OnDeath(Unit attacker)
+    {
+        _status.OnDeath(attacker);
     }
 
     public void CrossFade(string key,  float fadeTime = 0)

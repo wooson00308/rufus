@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ProcessSystem : SingletonMini<ProcessSystem>
 {
-    public List<Process> _processList = new();
+    private List<Process> _processList = new();
+    private Process _prevProcess;
 
-    public Process _prevProcess;
-
-    private void Start()
+    public void Start()
     {
+        _processList = GetComponentsInChildren<Process>().ToList();
+
         foreach (var process in _processList)
         {
             process.Initialized(this);
