@@ -10,6 +10,7 @@ public class Unit : MonoBehaviour, IStatSettable
     private Status _status;
     private FSM _fsm;
     private UnitAnimator _animator;
+    private Inventory _inventory;
 
     private bool _isInitialized;
     private bool _isActive;
@@ -17,11 +18,15 @@ public class Unit : MonoBehaviour, IStatSettable
     public bool IsInitialized => _isInitialized;
     public bool IsActive => _isActive;
 
+    public Inventory Inventory => _inventory;
+
     public void Awake()
     {
         _status = GetComponent<Status>();
         _fsm = GetComponent<FSM>();
         _animator = GetComponentInChildren<UnitAnimator>();
+        _inventory = GetComponentInChildren<Inventory>();
+        _inventory.Initialized(this);
     }
 
     public void Initialized(UnitData data)

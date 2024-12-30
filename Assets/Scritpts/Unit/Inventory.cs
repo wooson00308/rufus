@@ -57,11 +57,6 @@ public class Inventory : MonoBehaviour
         _owner.UpdateStats(data.Id.ToString(), data);
     }
 
-    public void Loot()
-    {
-        if (!_isInitialized) return;
-    }
-
     public void Drop(Item item)
     {
         if (!_isInitialized) return;
