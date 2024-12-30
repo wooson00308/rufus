@@ -1,8 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StatusFxData", menuName = "Scriptable Objects/StatusFxData")]
-public class StatusFxData : Data
+public abstract class StatusFxData : Data
 {
     [field: SerializeField] public Item Prefab { get; private set; }
     [field: SerializeField] public float Duration { get; private set; }
+
+    public abstract void OnApply(Unit unit);
+    public abstract void OnUpdate(Unit unit);
+    public abstract void OnRemove(Unit unit);
 }

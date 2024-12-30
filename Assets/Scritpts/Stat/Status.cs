@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class Status : MonoBehaviour, IStats, IStatSettable
 {
-    [field:SerializeField] public IntStat Health { get; private set; }
-    [field: SerializeField] public IntStat Armor { get; private set; }
-    [field: SerializeField] public IntStat AttackDamage { get; private set; }
-    [field: SerializeField] public FloatStat AttackSpeed { get; private set; }
-    [field: SerializeField] public FloatStat AttackRange { get; private set; }
-    [field: SerializeField] public FloatStat MoveSpeed { get; private set; }
+    [HideInInspector] public IntStat Health { get; private set; }
+    [HideInInspector] public IntStat Armor { get; private set; }
+    [HideInInspector] public IntStat AttackDamage { get; private set; }
+    [HideInInspector] public FloatStat AttackSpeed { get; private set; }
+    [HideInInspector] public FloatStat AttackRange { get; private set; }
+    [HideInInspector] public FloatStat MoveSpeed { get; private set; }
 
     public bool IsStun { get; private set; }
     public bool IsDeath { get; private set; }

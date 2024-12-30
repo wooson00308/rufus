@@ -20,7 +20,12 @@ public class Unit : MonoBehaviour, IStatSettable
 
     public Inventory Inventory => _inventory;
 
-    public void Awake()
+    void Start()
+    {
+        InitializeComponents();
+    }
+
+    private void InitializeComponents()
     {
         _status = GetComponent<Status>();
         _fsm = GetComponent<FSM>();
@@ -45,6 +50,7 @@ public class Unit : MonoBehaviour, IStatSettable
     public void OnDisable()
     {
         _isInitialized = false;
+        _isActive = false;
     }
 
     public void SetActive(bool value)
@@ -85,8 +91,8 @@ public class Unit : MonoBehaviour, IStatSettable
     public void ApplyStatusFx(StatusFxData data)
     {
         var statusFx = ResourceManager.Instance.Spawn(data.Prefab.gameObject, transform)
-            .GetComponent<StatusFxBase>();
+            .GetComponent<StatusFx>();
 
-        statusFx.Initialized(data);
+        statusFx.OnApply(data, this);
     }
 }
