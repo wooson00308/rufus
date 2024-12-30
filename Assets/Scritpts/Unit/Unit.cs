@@ -81,4 +81,12 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         _animator.CrossFade(key, fadeTime);
     }
+
+    public void ApplyStatusFx(StatusFxData data)
+    {
+        var statusFx = ResourceManager.Instance.Spawn(data.Prefab.gameObject, transform)
+            .GetComponent<StatusFxBase>();
+
+        statusFx.Initialized(data);
+    }
 }
