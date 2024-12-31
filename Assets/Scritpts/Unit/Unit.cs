@@ -7,10 +7,15 @@ public class Unit : MonoBehaviour, IStatSettable
     public const string BASE_STATS_KEY = "base";
     public const string ENGAGE_STATS_KEY = "engage";
 
+    public int Id { get; private set; }
+    public string Name { get; private set; }
+    public Team Team { get; private set; }
+
     private Status _status;
     private FSM _fsm;
     private UnitAnimator _animator;
     private Inventory _inventory;
+    private TargetDetector _detector;
 
     private bool _isInitialized;
     private bool _isActive;
@@ -19,6 +24,7 @@ public class Unit : MonoBehaviour, IStatSettable
     public bool IsActive => _isActive;
 
     public Inventory Inventory => _inventory;
+    public Status Status => _status;
 
     void Start()
     {
@@ -34,9 +40,13 @@ public class Unit : MonoBehaviour, IStatSettable
         _inventory.Initialized(this);
     }
 
-    public void Initialized(UnitData data)
+    public void Initialized(UnitData data, Team team = Team.Enemy)
     {
         _isActive = true;
+
+        Id = data.Id; 
+        Name = data.Name;
+        Team = team;
 
         IntializeStats(data);
 

@@ -1,19 +1,19 @@
 using UnityEngine;
 
-public class IdleState : StateBase
+public class HitState : StateBase
 {
     public override void OnEnter(Unit unit)
     {
-        unit.CrossFade("Idle");
+        unit.CrossFade("Hit");
     }
 
     public override void OnExit(Unit unit)
     {
-        
+
     }
 
     public override void OnUpdate(Unit unit)
     {
-        
+
     }
 }
