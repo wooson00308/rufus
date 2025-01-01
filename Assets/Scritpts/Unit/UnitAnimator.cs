@@ -10,6 +10,11 @@ public class UnitAnimator : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
+    public void SetMoveSpeed(float speed)
+    {
+        _animator.SetFloat("MoveSpeed", speed);
+    }
+
     public void OnAttack(AnimationEvent e)
     {
 

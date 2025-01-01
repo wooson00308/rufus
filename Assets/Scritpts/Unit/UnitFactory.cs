@@ -73,6 +73,31 @@ public class UnitFactory : SingletonMini<UnitFactory>
         return GetAllActiveUnits().FindAll(unit => unit.Team != team);
     }
 
+    public List<Unit> GetAllActiveUnitsInAoERadius(Unit target, List<Unit> units, float radius)
+    {
+        List<Unit> unitsInRadius = new() { target };
+        Vector3 unitPosition = target.transform.position;
+
+        foreach (Unit otherUnit in units)
+        {
+            if (otherUnit == target)
+                continue;
+
+            if (!otherUnit.IsActive)
+                continue;
+
+            float distance = Vector3.Distance(unitPosition, otherUnit.transform.position);
+
+            if (distance <= radius)
+            {
+                unitsInRadius.Add(otherUnit);
+            }
+        }
+
+        return unitsInRadius;
+    }
+
+
     /// <summary>
     /// 특정 ID의 유닛을 반환합니다.
     /// </summary>

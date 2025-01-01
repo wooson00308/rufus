@@ -7,18 +7,20 @@ public class TargetDetector : MonoBehaviour
 
     public DetectDataBase _detectData;
 
-    private Unit _currentTarget;
+    private Unit _target;
 
-    public List<Unit> Target
+    public List<Unit> Targets
     {
         get
         {
             var units = UnitFactory.Instance.GetAllActiveUnitsInEnemy(_unit.Team);
+            _target = _detectData.Detect(_unit, units, _target);
 
-            _currentTarget = _detectData.Detect(_unit, units, _currentTarget);
+            if(_unit.Status.AoERadius.Value <= 0) return new List<Unit>() { _target };
 
+            var targets = UnitFactory.Instance.GetAllActiveUnitsInAoERadius(_target, units, _unit.Status.AoERadius.Value);
 
-            return _currentTarget;
+            return targets;
         }
     }
 

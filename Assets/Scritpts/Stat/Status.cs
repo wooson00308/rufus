@@ -8,6 +8,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     [HideInInspector] public FloatStat AttackSpeed { get; private set; }
     [HideInInspector] public FloatStat AttackRange { get; private set; }
     [HideInInspector] public FloatStat MoveSpeed { get; private set; }
+    [HideInInspector] public FloatStat AoERadius { get; private set; }
 
     public bool IsStun { get; private set; }
     public bool IsDeath { get; private set; }
@@ -20,6 +21,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
         AttackSpeed = new FloatStat(stats.AttackSpeed.Value);
         AttackRange = new FloatStat(stats.AttackRange.Value);
         MoveSpeed = new FloatStat(stats.MoveSpeed.Value);
+        AoERadius = new FloatStat(stats.AoERadius.Value);
     }
 
     public void ResetStats(string key)
@@ -30,6 +32,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
         AttackSpeed.Reset(key);
         AttackRange.Reset(key);
         MoveSpeed.Reset(key);
+        AoERadius.Reset(key);
     }
 
     public void UpdateStats(string key, IStats stats)
@@ -37,9 +40,10 @@ public class Status : MonoBehaviour, IStats, IStatSettable
         Health.Update(key, stats.Health.Value);
         Armor.Update(key, stats.Armor.Value);
         AttackDamage.Update(key, stats.AttackDamage.Value);
-        AttackSpeed.Update(key, stats.MoveSpeed.Value);
-        AttackRange.Update(key, stats.MoveSpeed.Value);
+        AttackSpeed.Update(key, stats.AttackSpeed.Value);
+        AttackRange.Update(key, stats.AttackRange.Value);
         MoveSpeed.Update(key, stats.MoveSpeed.Value);
+        AoERadius.Update(key, stats.AoERadius.Value);
     }
 
     public void OnStun(Unit attacker)

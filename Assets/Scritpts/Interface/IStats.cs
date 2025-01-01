@@ -8,6 +8,11 @@ public interface IStats
     public FloatStat AttackSpeed { get; }
     public FloatStat AttackRange { get; }
     public FloatStat MoveSpeed { get; }
+
+    /// <summary>
+    /// 범위공격 범위 / 0이면 단일공격
+    /// </summary>
+    public FloatStat AoERadius { get; }
 }
 
 public interface IStatSettable

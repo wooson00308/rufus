@@ -11,6 +11,7 @@ public class ItemData : Data, IStats
     [field: SerializeField] public FloatStat AttackSpeed { get; private set; }
     [field: SerializeField] public FloatStat AttackRange { get; private set; }
     [field: SerializeField] public FloatStat MoveSpeed { get; private set; }
+    [field: SerializeField] public FloatStat AoERadius { get; private set; }
 }
 
 public enum EquipType
