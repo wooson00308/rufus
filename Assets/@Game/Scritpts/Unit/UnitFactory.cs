@@ -41,6 +41,42 @@ public class UnitFactory : SingletonMini<UnitFactory>
     }
 
     /// <summary>
+    /// 주어진 UnitData를 기반으로 여러 유닛을 생성하거나 풀링하여 반환합니다.
+    /// </summary>
+    /// <param name="unitData">생성할 유닛의 데이터</param>
+    /// <param name="count">생성할 유닛의 수</param>
+    /// <param name="startPosition">유닛들의 시작 위치</param>
+    /// <param name="parent">유닛들의 부모 Transform</param>
+    /// <param name="team">유닛이 속할 팀</param>
+    /// <returns>생성된 Unit 목록</returns>
+    public List<Unit> CreateUnits(UnitData unitData, int count, Vector3 startPosition, Transform parent = null, Team team = Team.Enemy)
+    {
+        if (unitData == null)
+        {
+            Debug.LogError("UnitData가 null입니다.");
+            return null;
+        }
+
+        List<Unit> createdUnits = new List<Unit>();
+
+        for (int i = 0; i < count; i++)
+        {
+            // 예: x 방향으로 약간씩 떨어뜨려 스폰
+            Vector3 spawnPos = startPosition + new Vector3(i * 2f, 0f, 0f);
+
+            // 기존의 CreateUnit 메서드를 재활용합니다.
+            Unit unit = CreateUnit(unitData, spawnPos, parent, team);
+            if (unit != null)
+            {
+                createdUnits.Add(unit);
+            }
+        }
+
+        return createdUnits;
+    }
+
+
+    /// <summary>
     /// 유닛을 파괴(풀에 반환)합니다.
     /// </summary>
     /// <param name="unit">unit.GetInstanceID()</param>

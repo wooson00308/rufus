@@ -5,6 +5,7 @@ public class UnitAnimator : MonoBehaviour
 {
     private Unit _owner;
     private Animator _animator;
+    private SpriteRenderer _renderer;
 
     public Animator Animator => _animator;
 
@@ -12,6 +13,12 @@ public class UnitAnimator : MonoBehaviour
     {
         _owner = GetComponentInParent<Unit>();
         _animator = GetComponent<Animator>();
+        _renderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void Update()
+    {
+        _renderer.sortingOrder = (int)(_owner.transform.position.y * -100);
     }
 
     public void SetMoveSpeed(float speed)
