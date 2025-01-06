@@ -576,7 +576,7 @@ MonoBehaviour:
   _camera: {fileID: 1518904887}
   _spawnConfig:
   - point: {fileID: 1232918688}
-    unit: {fileID: 11400000, guid: eaee63f576020b149960410b9d318079, type: 2}
+    unit: {fileID: 11400000, guid: 32095a457e1834a40b7d7861e4f88532, type: 2}
   - point: {fileID: 1252078173}
     unit: {fileID: 11400000, guid: eaee63f576020b149960410b9d318079, type: 2}
 --- !u!1 &911964144
@@ -831,7 +831,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1296809933}
-  - component: {fileID: 1296809932}
+  - component: {fileID: 1296809934}
   m_Layer: 0
   m_Name: '@UnitFactory'
   m_TagString: Untagged
@@ -839,18 +839,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1296809932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1296809931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa3fda99741971a4292ed17c56593b56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1296809933
 Transform:
   m_ObjectHideFlags: 0
@@ -868,6 +856,18 @@ Transform:
   - {fileID: 1252078173}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1296809934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296809931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa3fda99741971a4292ed17c56593b56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1443631455
 GameObject:
   m_ObjectHideFlags: 0

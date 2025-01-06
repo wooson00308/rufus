@@ -14,7 +14,7 @@ public class UnitFactory : SingletonMini<UnitFactory>
     /// <param name="position">유닛의 생성 위치</param>
     /// <param name="parent">유닛의 부모 Transform</param>
     /// <returns>생성된 Unit</returns>
-    public Unit CreateUnit(UnitData unitData, Vector3 position, Transform parent = null, Team team = Team.Enemy)
+    public Unit CreateUnit(UnitData unitData, Vector3 position, Transform parent = null, Team team = Team.Enemy, bool isPlayer = false)
     {
         if (unitData == null)
         {
@@ -32,7 +32,7 @@ public class UnitFactory : SingletonMini<UnitFactory>
             return null;
         }
 
-        unit.Initialized(unitData, team);
+        unit.Initialized(unitData, team, isPlayer);
         unit.gameObject.name = unit.GetInstanceID().ToString();
 
         _activeUnits[unit.GetInstanceID()] = unit;

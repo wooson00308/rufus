@@ -4,7 +4,10 @@ public class ChaseState : StateBase
 {
     public override void OnEnter(Unit unit)
     {
-        unit.CrossFade("Chase");
+        if (unit.Status.MoveSpeed.Value < 5)
+            unit.CrossFade("Walk");
+        else
+            unit.CrossFade("Run");
     }
 
     public override void OnExit(Unit unit)

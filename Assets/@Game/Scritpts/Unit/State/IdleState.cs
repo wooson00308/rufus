@@ -5,6 +5,7 @@ public class IdleState : StateBase
     public override void OnEnter(Unit unit)
     {
         unit.CrossFade("Idle");
+        unit.Stop();
     }
 
     public override void OnExit(Unit unit)

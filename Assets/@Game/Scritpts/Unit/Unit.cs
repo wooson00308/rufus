@@ -55,7 +55,7 @@ public class Unit : MonoBehaviour, IStatSettable
         _agent.updateUpAxis = false;
     }
 
-    public void Initialized(UnitData data, Team team = Team.Enemy)
+    public void Initialized(UnitData data, Team team = Team.Enemy, bool isPlayer = false)
     {
         _isActive = true;
 
@@ -67,7 +67,15 @@ public class Unit : MonoBehaviour, IStatSettable
 
         UpdateStats(BASE_STATS_KEY, data);
 
-        _fsm.StartState<IdleState>();
+        if(!isPlayer)
+        {
+            _fsm.StartState<IdleState>();
+        }
+        else
+        {
+            _fsm.StartState<PlayerIdleState>();
+        }
+        
 
         _isInitialized = true;
     }
@@ -152,6 +160,13 @@ public class Unit : MonoBehaviour, IStatSettable
         Rotation(target.position - transform.position);
     }
 
+    public void Move(Vector2 vector)
+    {
+        _agent.isStopped = false;
+        _agent.velocity = Status.MoveSpeed.Value * vector;
+        Rotation(vector);
+    }
+
     public void Warp(Vector3 pos)
     {
         _agent.Warp(pos);
@@ -162,6 +177,7 @@ public class Unit : MonoBehaviour, IStatSettable
     /// </summary>
     public void Stop()
     {
+        _agent.velocity = Vector3.zero;
         _agent.isStopped = true;
     }
 
