@@ -25,14 +25,14 @@ public class StatusFx : MonoBehaviour
         _isApplied = true;
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
         _isApplied = false;
 
         _data.OnRemove(_owner);
     }
 
-    private void Update()
+    public void Update()
     {
         if (!_isApplied) return;
         if (_data == null) return;

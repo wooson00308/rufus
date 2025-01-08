@@ -39,6 +39,34 @@ public class UnitAnimator : MonoBehaviour
         }
     }
 
+    public void OnFireProjectile(AnimationEvent e)
+    {
+        var weaponData = _owner.Inventory.GetItemToEquipType(EquipType.Weapon).Data as WeaponItemData;
+        if (weaponData == null) return;
+
+        var projectileData = weaponData.ProjectileData;
+        if(projectileData == null) return;
+
+        var projectilePrefab = ResourceManager.Instance.Spawn(projectileData.Prefab.gameObject);
+        if(projectilePrefab == null) return;
+
+        var projectile = projectilePrefab.GetComponent<Projectile>();
+        if(projectileData.HasHoming && _owner.Target != null)
+        {
+            // 타겟이 있고, 유도기능이면 
+            projectile.SetTarget(_owner.Target.transform);
+        }
+        else 
+        {
+            // 타겟이 없거나 유도기능이 off이면
+            var direction = _owner.Model.transform.rotation.y == 180 ? 
+                Vector3.left :
+                Vector3.right;
+            projectile.SetDirection(direction);
+        }
+        projectile.OnFire(_owner, projectileData);
+    }
+
     public void OnDeath(AnimationEvent e)
     {
         UnitFactory.Instance.DestroyUnit(_owner.GetInstanceID());

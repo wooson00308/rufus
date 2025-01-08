@@ -30,6 +30,11 @@ public class Inventory : MonoBehaviour
         _isInitialized = true;
     }
 
+    public Item GetItemToEquipType(EquipType type)
+    {
+        return _items.Find(x => x.Data.EquipType == type);
+    }
+
     public void Equip(ItemData data)
     {
         if (!_isInitialized) return;

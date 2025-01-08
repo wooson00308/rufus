@@ -40,19 +40,4 @@ public static class Extension
     {
         return unit.GetInstanceID().Equals(target.GetInstanceID());
     }
-
-    public static void AddEnterEvent(this TriggerFx fx, Action<Unit> enterEvent)
-    {
-        fx.EnterEvent += enterEvent;
-    }
-
-    public static void AddStayEvent(this TriggerFx fx, Action<Unit> updateEvent)
-    {
-        fx.StayEvent += updateEvent;
-    }
-
-    public static void AddExitEvent(this TriggerFx fx, Action<Unit> exitEvent)
-    {
-        fx.ExitEvent += exitEvent;
-    }
 }
