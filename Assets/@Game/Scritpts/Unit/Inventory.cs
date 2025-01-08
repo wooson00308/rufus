@@ -57,6 +57,7 @@ public class Inventory : MonoBehaviour
         Transform slot = _equipSlots.Find(x => x.name == data.EquipType.ToString()) ?? transform;
         GameObject itemObj = ResourceManager.Instance.Spawn(data.Prefab.gameObject, slot);
         Item item = itemObj.GetComponent<Item>();
+        item.Initialized(data);
         _items.Add(item);
 
         _owner.UpdateStats(data.Id.ToString(), data);

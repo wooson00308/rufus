@@ -113,7 +113,7 @@ public class Unit : MonoBehaviour, IStatSettable
 
         _status.OnHit(damage, attacker);
 
-        if(Status.Health.Value <= 0)
+        if (Status.Health.Value <= 0)
         {
             OnDeath(attacker);
         }
@@ -121,7 +121,10 @@ public class Unit : MonoBehaviour, IStatSettable
 
     public void OnDeath(Unit attacker)
     {
+        if (Status.IsDeath) return;
+
         _status.OnDeath(attacker);
+        _fsm.TransitionTo<DeathState>();
     }
     #endregion
 

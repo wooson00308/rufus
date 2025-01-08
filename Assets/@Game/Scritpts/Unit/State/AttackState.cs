@@ -14,12 +14,11 @@ public class AttackState : StateBase
         _currentState = $"Attack {_currentStateIndex + 1}";
         unit.CrossFade(_currentState, 0f);
         unit.Stop();
-
-        _currentAttackStateCheckDelay = 0;
     }
 
     public override void OnExit(Unit unit)
     {
+        _currentAttackStateCheckDelay = 0;
     }
 
     public override void OnUpdate(Unit unit)
@@ -30,7 +29,12 @@ public class AttackState : StateBase
             return;
         }
 
-        if (unit.Target == null) return;
+        if (unit.Target == null)
+        {
+            _fsm.TransitionTo<ChaseState>();
+            return;
+        }
+
         unit.Rotation(unit.Target.transform.position - unit.transform.position);
 
         if (unit.GetAttackState() == 0)

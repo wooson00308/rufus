@@ -12,7 +12,9 @@ public class LobbyProcess : Process
     {
         var player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
         _camera.Follow = player.transform;
-        UnitFactory.Instance.CreateUnit(_spawnConfig[1].unit, _spawnConfig[1].point.position, null, Team.Enemy);
+        player.Inventory.Equip(_spawnConfig[0].item);
+        var enemy = UnitFactory.Instance.CreateUnit(_spawnConfig[1].unit, _spawnConfig[1].point.position, null, Team.Enemy);
+        enemy.Inventory.Equip(_spawnConfig[1].item);
     }
 
     public void OnDisable()
@@ -27,4 +29,5 @@ public class SpawnConfig
 {
     public Transform point;
     public UnitData unit;
+    public ItemData item;
 }

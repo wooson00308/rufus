@@ -30,7 +30,7 @@ public class PlayerMoveState : StateBase
 
         unit.Move(moveVector);
 
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0) && _fsm.CurrentStateName != "PlayerAttackState")
         {
             _fsm.TransitionTo<PlayerAttackState>();
         }

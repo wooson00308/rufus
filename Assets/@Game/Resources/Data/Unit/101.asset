@@ -27,7 +27,7 @@ MonoBehaviour:
   <AttackSpeed>k__BackingField:
     _value: 1
   <AttackRange>k__BackingField:
-    _value: 2
+    _value: 5
   <MoveSpeed>k__BackingField:
     _value: 5
   <AoERadius>k__BackingField:

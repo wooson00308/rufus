@@ -14,23 +14,27 @@ public class PlayerAttackState : StateBase
         _currentState = $"Attack {_currentStateIndex + 1}";
         unit.CrossFade(_currentState, 0f);
         unit.Stop();
-
-        _currentAttackStateCheckDelay = 0;
     }
 
     public override void OnExit(Unit unit)
     {
+        _currentAttackStateCheckDelay = 0;
     }
 
     public override void OnUpdate(Unit unit)
     {
-        if (_currentAttackStateCheckDelay <= 0.1f)
+        if (_currentAttackStateCheckDelay <= 0.5f)
         {
             _currentAttackStateCheckDelay += Time.deltaTime;
             return;
         }
 
-        if (unit.Target == null) return;
+        if (unit.Target == null)
+        {
+            _fsm.TransitionTo<PlayerMoveState>();
+            return;
+        }
+
         unit.Rotation(unit.Target.transform.position - unit.transform.position);
 
         if (unit.GetAttackState() == 0)

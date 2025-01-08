@@ -4,7 +4,7 @@ using UnityEngine;
 public abstract class ProjectileData : Data
 {
     [field: SerializeField] public bool HasHoming { get; private set; }
-    [field: SerializeField] public Item Prefab { get; private set; }
+    [field: SerializeField] public Projectile Prefab { get; private set; }
     [field: SerializeField] public IntStat Damage { get; private set; }
     [field: SerializeField] public FloatStat MoveSpeed { get; private set; }
     [field: SerializeField] public List<StatusFxData> StatusFxDatas { get; private set; } 

@@ -74,6 +74,8 @@ public class Status : MonoBehaviour, IStats, IStatSettable
 
     public void OnHit(int damage, Unit attacker)
     {
+        if (IsDeath) return;
+
         Health.Update(Unit.ENGAGE_STATS_KEY, -damage);
     }
 
@@ -81,5 +83,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     {
         if (IsDeath) return;
         IsDeath = true;
+
+
     }
 }

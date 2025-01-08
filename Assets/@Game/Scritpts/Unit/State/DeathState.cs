@@ -5,6 +5,7 @@ public class DeathState : StateBase
     public override void OnEnter(Unit unit)
     {
         unit.CrossFade("Death");
+        unit.Stop();
     }
 
     public override void OnExit(Unit unit)

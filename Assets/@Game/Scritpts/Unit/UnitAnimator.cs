@@ -41,6 +41,9 @@ public class UnitAnimator : MonoBehaviour
 
     public void OnFireProjectile(AnimationEvent e)
     {
+        var weapon = _owner.Inventory.GetItemToEquipType(EquipType.Weapon);
+        if (weapon == null) return;
+
         var weaponData = _owner.Inventory.GetItemToEquipType(EquipType.Weapon).Data as WeaponItemData;
         if (weaponData == null) return;
 
@@ -51,7 +54,9 @@ public class UnitAnimator : MonoBehaviour
         if(projectilePrefab == null) return;
 
         var projectile = projectilePrefab.GetComponent<Projectile>();
-        if(projectileData.HasHoming && _owner.Target != null)
+        projectile.transform.position = transform.position;
+
+        if (projectileData.HasHoming && _owner.Target != null)
         {
             // 타겟이 있고, 유도기능이면 
             projectile.SetTarget(_owner.Target.transform);
@@ -59,7 +64,7 @@ public class UnitAnimator : MonoBehaviour
         else 
         {
             // 타겟이 없거나 유도기능이 off이면
-            var direction = _owner.Model.transform.rotation.y == 180 ? 
+            var direction = _owner.Model.transform.rotation.y == 1 ? 
                 Vector3.left :
                 Vector3.right;
             projectile.SetDirection(direction);

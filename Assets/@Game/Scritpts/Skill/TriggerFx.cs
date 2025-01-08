@@ -15,6 +15,7 @@ public class TriggerFx : MonoBehaviour
     private bool _isInitialized = false;
     private bool _isWaitingForEventDelay;
 
+    public Action DestroyEvent { get; set; }
     public Action<Unit, Unit> EnterEvent { get; set; }
     public Action<Unit, Unit> StayEvent { get; set; }
     public Action<Unit, Unit> ExitEvent { get; set; }
@@ -22,6 +23,7 @@ public class TriggerFx : MonoBehaviour
     public void Initialized(Unit owner, TriggerFxData data)
     {
         _owner = owner;
+        _data = data;
 
         _duration = data.Durtaion;
         _eps = data.EPS;
@@ -48,9 +50,20 @@ public class TriggerFx : MonoBehaviour
 
     public async void StartDuration()
     {
-        await Awaitable.WaitForSecondsAsync(_duration);
+        float time = 0;
+        while(time <= _duration)
+        {
+            if(!gameObject.activeSelf)
+            {
+                return;
+            }
 
-        ResourceManager.Instance.Destroy(gameObject);
+            time += Time.deltaTime;
+
+            await Awaitable.EndOfFrameAsync();
+        }
+
+        DestroyEvent?.Invoke();
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -58,7 +71,7 @@ public class TriggerFx : MonoBehaviour
         if (!_isInitialized) return;
         if(collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
             EnterEvent?.Invoke(_owner, target);
 
@@ -66,7 +79,15 @@ public class TriggerFx : MonoBehaviour
 
             if(++_triggerCount >= _data.MaxMultiTriggerCount)
             {
-                ResourceManager.Instance.Destroy(gameObject);
+                DestroyEvent?.Invoke();
+            }
+        }
+
+        if(collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        {
+            if (++_triggerCount >= _data.MaxMultiTriggerCount)
+            {
+                DestroyEvent?.Invoke();
             }
         }
     }
@@ -77,7 +98,7 @@ public class TriggerFx : MonoBehaviour
         if (!_isInitialized) return;
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
             StayEvent?.Invoke(_owner, target);
 
@@ -97,7 +118,7 @@ public class TriggerFx : MonoBehaviour
         if (!_isInitialized) return;
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
             ExitEvent?.Invoke(_owner, target);
 
