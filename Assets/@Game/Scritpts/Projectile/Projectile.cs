@@ -60,6 +60,11 @@ public class Projectile : MonoBehaviour
         _isFired = true;
     }
 
+    public void OnFireOnTarget(Unit owner, ProjectileData data)
+    {
+
+    }
+
     public void OnDestroyed()
     {
         ResourceManager.Instance.Destroy(gameObject);
