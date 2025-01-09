@@ -580,7 +580,7 @@ MonoBehaviour:
     item: {fileID: 11400000, guid: 48db1683e08487541b17421e9b8b2c89, type: 2}
   - point: {fileID: 1252078173}
     unit: {fileID: 11400000, guid: eaee63f576020b149960410b9d318079, type: 2}
-    item: {fileID: 11400000, guid: 48db1683e08487541b17421e9b8b2c89, type: 2}
+    item: {fileID: 11400000, guid: beda27a0b55276f45990fa895e17665e, type: 2}
 --- !u!1 &911964144
 GameObject:
   m_ObjectHideFlags: 0

@@ -63,10 +63,20 @@ public class UnitAnimator : MonoBehaviour
         }
         else 
         {
+            Vector2 direction;
+
             // 타겟이 없거나 유도기능이 off이면
-            var direction = _owner.Model.transform.rotation.y == 1 ? 
-                Vector3.left :
-                Vector3.right;
+            if (_owner.Target != null)
+            {
+                direction = _owner.Target.transform.position - _owner.transform.position;
+            }
+            else
+            {
+                direction = _owner.Model.transform.rotation.y == 1 ?
+                    Vector3.left :
+                    Vector3.right;
+            }
+            
             projectile.SetDirection(direction);
         }
         projectile.OnFire(_owner, projectileData);

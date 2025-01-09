@@ -20,13 +20,14 @@ public class ChaseState : StateBase
         if(unit.Target == null)
         {
             _fsm.TransitionTo<IdleState>();
+            return;
         }
 
         unit.MoveFromTarget(unit.Target.transform);
 
-        var distace = Vector2.Distance(unit.transform.position, unit.Target.transform.position);
+        var distance = Vector2.Distance(unit.transform.position, unit.Target.transform.position);
 
-        if(distace <= unit.Status.AttackRange.Value)
+        if(distance <= unit.Status.AttackRange.Value)
         {
             _fsm.TransitionTo<AttackState>();
         }

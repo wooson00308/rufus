@@ -70,6 +70,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 711071933836145479, guid: 2a13cfc6129ca7047b2c3f383a96fe2f, type: 3}
+      propertyPath: m_Size.x
+      value: 0.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 711071933836145479, guid: 2a13cfc6129ca7047b2c3f383a96fe2f, type: 3}
+      propertyPath: m_Size.y
+      value: 0.37
+      objectReference: {fileID: 0}
+    - target: {fileID: 711071933836145479, guid: 2a13cfc6129ca7047b2c3f383a96fe2f, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 1343243108801667439, guid: 2a13cfc6129ca7047b2c3f383a96fe2f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -112,7 +124,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8605404571819183538, guid: 2a13cfc6129ca7047b2c3f383a96fe2f, type: 3}
       propertyPath: m_Name
-      value: ProjectileBase Variant
+      value: 1000@Projectile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

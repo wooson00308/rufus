@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class UnitFactory : SingletonMini<UnitFactory>
+public class UnitFactory : Singleton<UnitFactory>
 {
     private readonly Dictionary<int, Unit> _activeUnits = new();
 

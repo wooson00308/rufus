@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(TriggerFx))]
 public class Projectile : MonoBehaviour
 {
+    private Unit _owner;
     private ProjectileData _data;
 
     private TriggerFx _triggerFx;
@@ -18,6 +19,8 @@ public class Projectile : MonoBehaviour
     private bool _isHoming;
     private bool _isDestroyed;
 
+    public Unit Owner => _owner;
+
     public void Awake()
     {
         _collider = GetComponent<BoxCollider2D>();
@@ -31,12 +34,12 @@ public class Projectile : MonoBehaviour
         _isHoming = false;
         _isFired = false;
         _target = null;
-        _collider.enabled = false;
         _direction = Vector3.zero;
     }
 
     public void OnFire(Unit owner, ProjectileData data)
     {
+        _owner = owner;
         _data = data;
 
         _triggerFx.EnterEvent += _data.OnTriggerEnterEvent;
@@ -44,6 +47,7 @@ public class Projectile : MonoBehaviour
         _triggerFx.ExitEvent += _data.OnTriggerExitEvent;
         _triggerFx.DestroyEvent += 
             () => {
+                _collider.enabled = false;
                 _model.Animator.CrossFade("Explosion", 0f);
                 _speed = 0;
             };
@@ -85,6 +89,7 @@ public class Projectile : MonoBehaviour
             if(!_isDestroyed)
             {
                 _isDestroyed = true;
+                _collider.enabled = false;
                 _model.Animator.CrossFade("Explosion", 0f);
                 _speed = 0;
             }
@@ -105,14 +110,15 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Rotation(Vector3 rotDir)
+    public void Rotation(Vector2 rotDir)
     {
         if (!_isFired) return;
 
-        if (rotDir.x != 0)
+        // 방향 벡터의 x축이 양수면 오른쪽, 음수면 왼쪽을 바라보도록 처리
+        if (rotDir.x != 0 || rotDir.y != 0)
         {
-            float rotY = rotDir.x > 0 ? 0 : 180;
-            _model.transform.rotation = Quaternion.Euler(0, rotY, 0);
+            float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg; // 2D 벡터 방향을 각도로 변환
+            _model.transform.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
 }

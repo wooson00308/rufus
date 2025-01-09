@@ -12,6 +12,7 @@ public class TriggerFx : MonoBehaviour
     private float _duration;
     private float _eps; // Event per seconds
     private bool _onEventFromSelf = false;
+    private bool _onEventFromOwnerProjectile = false;
     private bool _isInitialized = false;
     private bool _isWaitingForEventDelay;
 
@@ -29,6 +30,7 @@ public class TriggerFx : MonoBehaviour
         _eps = data.EPS;
 
         _onEventFromSelf = data.OnEventFromSelf;
+        _onEventFromOwnerProjectile = data.OnEventFromOwnerProjectile;
 
         StartDuration();
 
@@ -41,8 +43,10 @@ public class TriggerFx : MonoBehaviour
         StayEvent = null;
         ExitEvent = null;
 
+        _triggerCount = 0;
         _isInitialized = false;
         _onEventFromSelf = false;
+        _onEventFromOwnerProjectile = false;
         _isWaitingForEventDelay = false;
 
         _targets.Clear();
@@ -83,8 +87,9 @@ public class TriggerFx : MonoBehaviour
             }
         }
 
-        if(collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        else if(collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
         {
+            if (!_onEventFromOwnerProjectile && projectile.Owner.EqualsUnit(_owner)) return;
             if (++_triggerCount >= _data.MaxMultiTriggerCount)
             {
                 DestroyEvent?.Invoke();
@@ -104,6 +109,15 @@ public class TriggerFx : MonoBehaviour
 
             EventPerSeconds();
         }
+
+        else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        {
+            if (!_onEventFromOwnerProjectile && projectile.Owner.EqualsUnit(_owner)) return;
+            
+            StayEvent?.Invoke(_owner, target);
+
+            EventPerSeconds();
+        }
     }
 
     private async void EventPerSeconds()
@@ -119,6 +133,15 @@ public class TriggerFx : MonoBehaviour
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+
+            ExitEvent?.Invoke(_owner, target);
+
+            _targets.Remove(target);
+        }
+
+        else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        {
+            if (!_onEventFromOwnerProjectile && projectile.Owner.EqualsUnit(_owner)) return;
 
             ExitEvent?.Invoke(_owner, target);
 
