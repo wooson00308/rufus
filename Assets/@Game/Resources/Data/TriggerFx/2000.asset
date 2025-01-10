@@ -16,7 +16,8 @@ MonoBehaviour:
   <Name>k__BackingField: Fireball Trigger Fx
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
-  <MaxMultiTriggerCount>k__BackingField: 2
-  <Durtaion>k__BackingField: 3
+  <MaxMultiTriggerCount>k__BackingField: 1
+  <Durtaion>k__BackingField: 0
   <EPS>k__BackingField: 0
   <OnEventFromSelf>k__BackingField: 0
+  <OnEventFromOwnerProjectile>k__BackingField: 0

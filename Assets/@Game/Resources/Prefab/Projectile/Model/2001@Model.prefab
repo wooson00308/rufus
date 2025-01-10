@@ -50,7 +50,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2043908876312564431, guid: cae79023e47027b479039b0eeff73e71, type: 3}
       propertyPath: m_Name
-      value: ProjectileModelBase
+      value: 2001@Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039842589486162465, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_GeometryType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039842589486162465, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_UsedByEffector
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039842589486162465, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_UseDelaunayMesh
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039842589486162465, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_ColliderPaths.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039842589486162465, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6520465299087063070, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: <Data>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 1748b77980d7b18478625922a74888d9, type: 2}
+    - target: {fileID: 8487395853092187981, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_AutoTiling
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8487395853092187981, guid: cae79023e47027b479039b0eeff73e71, type: 3}
+      propertyPath: m_CompositeOperation
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

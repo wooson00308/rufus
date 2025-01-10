@@ -16,11 +16,12 @@ MonoBehaviour:
   <Name>k__BackingField: Fireball
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
-  <HasHoming>k__BackingField: 1
+  <HasHoming>k__BackingField: 0
   <Prefab>k__BackingField: {fileID: 4509992889323842399, guid: 37bc97f4dcf85ad499a18a0388dd32e4, type: 3}
-  <Damage>k__BackingField:
-    _value: 10
   <MoveSpeed>k__BackingField:
     _value: 5
+  <Duration>k__BackingField:
+    _value: 8
   <StatusFxDatas>k__BackingField: []
-  <TriggerFxData>k__BackingField: {fileID: 11400000, guid: 35c3b2b1b2d2ad648827f09d52ed37a7, type: 2}
+  <DamageCoefficient>k__BackingField:
+    _value: 100
