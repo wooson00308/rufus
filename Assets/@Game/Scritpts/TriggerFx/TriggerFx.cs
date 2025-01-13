@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class TriggerFx : MonoBehaviour
 {
     private Unit _owner;
     private List<Unit> _targets = new();
+    private Dictionary<int, bool> _canCollideIds = new();
     private Collider2D[] _colliders;
     private TriggerFxAnimator _model;
 
@@ -23,9 +25,9 @@ public class TriggerFx : MonoBehaviour
     public Unit Owner => _owner;
     [field: SerializeField] public TriggerFxData Data { get; private set; }
     public Action DestroyEvent { get; set; }
-    public Action<Unit, Unit> EnterEvent { get; set; }
-    public Action<Unit, Unit> StayEvent { get; set; }
-    public Action<Unit, Unit> ExitEvent { get; set; }
+    public Action<Unit, Unit> EnterUnitEvent { get; set; }
+    public Action<Unit, Unit> StayUnitEvent { get; set; }
+    public Action<Unit, Unit> ExitUnitEvent { get; set; }
     public bool IsDestroy => _isDestroy;
 
     public void Awake()
@@ -37,6 +39,21 @@ public class TriggerFx : MonoBehaviour
     public void Initialized(Unit owner)
     {
         _owner = owner;
+
+        foreach(var fxData in Data.EnterFxDatas)
+        {
+            EnterUnitEvent += fxData.OnEvent;
+        }
+
+        foreach (var fxData in Data.StayFxDatas)
+        {
+            StayUnitEvent += fxData.OnEvent;
+        }
+
+        foreach (var fxData in Data.ExitFxDatas)
+        {
+            ExitUnitEvent += fxData.OnEvent;
+        }
 
         _duration = Data.Durtaion;
         _eps = Data.EPS;
@@ -56,9 +73,9 @@ public class TriggerFx : MonoBehaviour
 
     public void OnDisable()
     {
-        EnterEvent = null;
-        StayEvent = null;
-        ExitEvent = null;
+        EnterUnitEvent = null;
+        StayUnitEvent = null;
+        ExitUnitEvent = null;
 
         _triggerCount = 0;
         _isInitialized = false;
@@ -68,6 +85,7 @@ public class TriggerFx : MonoBehaviour
         _isDestroy = false;
 
         _targets.Clear();
+        _canCollideIds.Clear();
     }
 
     public async void StartDuration()
@@ -105,71 +123,111 @@ public class TriggerFx : MonoBehaviour
         DestroyEvent?.Invoke();
     }
 
+    private bool CanCollide(Collider2D coll)
+    {
+        if (!_canCollideIds.TryGetValue(coll.GetInstanceID(), out bool canCollide))
+        {
+            _canCollideIds.Add(coll.GetInstanceID(), true);
+            return true;
+        }
+
+        return canCollide;
+    }
+
     public void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!CanCollide(collision)) return;
+
         if (!_isInitialized) return;
         if(collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            EnterEvent?.Invoke(_owner, target);
+            EnterUnitEvent?.Invoke(_owner, target);
 
             _targets.Add(target);
 
-            if(Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
                 OnDestroyEvent();
             }
+
+            StartCoroutine(EventPerSeconds(collision));
         }
 
         else if(collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
             if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
                 OnDestroyEvent();
             }
+
+            StartCoroutine(EventPerSeconds(collision));
         }
     }
 
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if (_isWaitingForEventDelay) return;
+        if (!CanCollide(collision)) return;
+
         if (!_isInitialized) return;
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            StayEvent?.Invoke(_owner, target);
+            StayUnitEvent?.Invoke(_owner, target);
 
-            EventPerSeconds();
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
+            {
+                OnDestroyEvent();
+            }
+
+            StartCoroutine(EventPerSeconds(collision));
         }
 
         else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
         {
             if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
             
-            StayEvent?.Invoke(_owner, target);
+            StayUnitEvent?.Invoke(_owner, target);
 
-            EventPerSeconds();
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
+            {
+                OnDestroyEvent();
+            }
+
+            StartCoroutine(EventPerSeconds(collision));
         }
     }
 
-    private async void EventPerSeconds()
+    private IEnumerator EventPerSeconds(Collider2D coll)
     {
-        _isWaitingForEventDelay = true;
-        await Awaitable.WaitForSecondsAsync(_eps);
-        _isWaitingForEventDelay = false;
+        _canCollideIds[coll.GetInstanceID()] = false;
+
+        float time = 0;
+        while(time < _eps)
+        {
+            time += Time.deltaTime;
+            yield return null;
+
+            if (!_isInitialized) yield break;
+        }
+
+        _canCollideIds[coll.GetInstanceID()] = true;
     }
 
     public void OnTriggerExit2D(Collider2D collision)
     {
+        if (!CanCollide(collision)) return;
+
         if (!_isInitialized) return;
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            ExitEvent?.Invoke(_owner, target);
+            ExitUnitEvent?.Invoke(_owner, target);
 
             _targets.Remove(target);
         }
@@ -177,10 +235,8 @@ public class TriggerFx : MonoBehaviour
         else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
         {
             if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
-
-            ExitEvent?.Invoke(_owner, target);
-
-            _targets.Remove(target);
+            
+            //TODO
         }
     }
 }

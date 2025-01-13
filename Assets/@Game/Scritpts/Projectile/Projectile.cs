@@ -45,9 +45,9 @@ public class Projectile : MonoBehaviour
         foreach (var triggerFx in _triggerFxs)
         {
             triggerFx.gameObject.SetActive(true);
-            triggerFx.EnterEvent += _data.OnTriggerEnterEvent;
-            triggerFx.StayEvent += _data.OnTriggerStayEvent;
-            triggerFx.ExitEvent += _data.OnTriggerExitEvent;
+            triggerFx.EnterUnitEvent += _data.OnTriggerEnterEvent;
+            triggerFx.StayUnitEvent += _data.OnTriggerStayEvent;
+            triggerFx.ExitUnitEvent += _data.OnTriggerExitEvent;
             triggerFx.DestroyEvent +=
                 () => {
                     bool isAllDestroyed = true;

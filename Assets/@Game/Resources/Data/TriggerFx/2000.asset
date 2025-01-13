@@ -18,6 +18,11 @@ MonoBehaviour:
   <Description>k__BackingField: 
   <MaxMultiTriggerCount>k__BackingField: 1
   <Durtaion>k__BackingField: 0
-  <EPS>k__BackingField: 0
+  <EPS>k__BackingField: 1
   <OnEventFromSelf>k__BackingField: 0
   <OnEventFromOwnerProjectile>k__BackingField: 0
+  <EnterFxDatas>k__BackingField:
+  - {fileID: 11400000, guid: 9e8922895d1224d41839b6aa1a4000bb, type: 2}
+  <StayFxDatas>k__BackingField:
+  - {fileID: 11400000, guid: 9e8922895d1224d41839b6aa1a4000bb, type: 2}
+  <ExitFxDatas>k__BackingField: []
