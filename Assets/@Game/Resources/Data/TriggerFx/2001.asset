@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7636369fea35864a8ddaee2af975191, type: 3}
   m_Name: 2001
   m_EditorClassIdentifier: 
-  <Id>k__BackingField: 2000
+  <Id>k__BackingField: 2001
   <Name>k__BackingField: Fireball Trigger Fx
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
