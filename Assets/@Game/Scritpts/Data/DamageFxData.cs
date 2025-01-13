@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DamageFxData", menuName = "Scriptable Objects/DamageFxData")]
-public class DamageFxData : FxData
+public class DamageFxData : FxEventData
 {
     public int DamageCoefficient;
     public override void OnEvent(Unit owner, Unit target)

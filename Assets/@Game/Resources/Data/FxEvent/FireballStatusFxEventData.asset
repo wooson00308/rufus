@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d61907c8d3c25d49adaa5ba8fd0f8f4, type: 3}
-  m_Name: FireballDamageFxData
+  m_Script: {fileID: 11500000, guid: aaa959cf61f64e8419b47c575f336e43, type: 3}
+  m_Name: FireballStatusFxEventData
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 0
   <Name>k__BackingField: 
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
-  DamageCoefficient: 100
+  <StatusFxDatas>k__BackingField:
+  - {fileID: 11400000, guid: 10830f593368e334183bf05d3cff435a, type: 2}

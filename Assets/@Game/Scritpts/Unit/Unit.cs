@@ -140,12 +140,12 @@ public class Unit : MonoBehaviour, IStatSettable
     #endregion
 
     #region StatusFx
-    public void ApplyStatusFx(StatusFxData data)
+    public void ApplyStatusFx(StatusFxData data, Unit caster = null)
     {
         var statusFx = ResourceManager.Instance.Spawn(data.Prefab.gameObject, transform)
             .GetComponent<StatusFx>();
 
-        statusFx.OnApply(data, this);
+        statusFx.OnApply(data, this, caster);
     }
     #endregion
 

@@ -9,7 +9,7 @@ public class TriggerFxData : Data
     [field: SerializeField] public float EPS { get; private set; }
     [field: SerializeField] public bool OnEventFromSelf { get; private set; }
     [field: SerializeField] public bool OnEventFromOwnerProjectile { get; private set; }
-    [field: SerializeField] public List<FxData> EnterFxDatas { get; private set; }
-    [field: SerializeField] public List<FxData> StayFxDatas { get; private set; }
-    [field: SerializeField] public List<FxData> ExitFxDatas { get; private set; }
+    [field: SerializeField] public List<FxEventData> EnterFxDatas { get; private set; }
+    [field: SerializeField] public List<FxEventData> StayFxDatas { get; private set; }
+    [field: SerializeField] public List<FxEventData> ExitFxDatas { get; private set; }
 }
