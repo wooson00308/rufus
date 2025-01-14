@@ -7,9 +7,10 @@ using UnityEngine;
 [RequireComponent (typeof(Rigidbody2D))]
 public class TriggerFx : MonoBehaviour
 {
+    private readonly List<Unit> _targets = new();
+    private readonly Dictionary<int, bool> _canCollideIds = new();
+
     private Unit _owner;
-    private List<Unit> _targets = new();
-    private Dictionary<int, bool> _canCollideIds = new();
     private Collider2D[] _colliders;
     private TriggerFxAnimator _model;
 
@@ -19,15 +20,14 @@ public class TriggerFx : MonoBehaviour
     private bool _onEventFromSelf = false;
     private bool _onEventFromOwnerTriggerFx = false;
     private bool _isInitialized = false;
-    private bool _isWaitingForEventDelay;
     private bool _isDestroy = false;
 
     public Unit Owner => _owner;
     [field: SerializeField] public TriggerFxData Data { get; private set; }
     public Action DestroyEvent { get; set; }
-    public Action<Unit, Unit> EnterUnitEvent { get; set; }
-    public Action<Unit, Unit> StayUnitEvent { get; set; }
-    public Action<Unit, Unit> ExitUnitEvent { get; set; }
+    public Action<Unit, Unit, object> EnterUnitEvent { get; set; }
+    public Action<Unit, Unit, object> StayUnitEvent { get; set; }
+    public Action<Unit, Unit, object> ExitUnitEvent { get; set; }
     public bool IsDestroy => _isDestroy;
 
     public void Awake()
@@ -81,7 +81,6 @@ public class TriggerFx : MonoBehaviour
         _isInitialized = false;
         _onEventFromSelf = false;
         _onEventFromOwnerTriggerFx = false;
-        _isWaitingForEventDelay = false;
         _isDestroy = false;
 
         _targets.Clear();
@@ -100,7 +99,7 @@ public class TriggerFx : MonoBehaviour
                 return;
             }
 
-            time += Time.deltaTime;
+            time += GameTime.DeltaTime;
 
             await Awaitable.EndOfFrameAsync();
         }
@@ -143,7 +142,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            EnterUnitEvent?.Invoke(_owner, target);
+            EnterUnitEvent?.Invoke(_owner, target, null);
 
             _targets.Add(target);
 
@@ -177,7 +176,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            StayUnitEvent?.Invoke(_owner, target);
+            StayUnitEvent?.Invoke(_owner, target, null);
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
@@ -191,7 +190,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
             
-            StayUnitEvent?.Invoke(_owner, target);
+            StayUnitEvent?.Invoke(_owner, target, null);
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
@@ -209,7 +208,7 @@ public class TriggerFx : MonoBehaviour
         float time = 0;
         while(time < _eps)
         {
-            time += Time.deltaTime;
+            time += GameTime.DeltaTime;
             yield return null;
 
             if (!_isInitialized) yield break;
@@ -227,7 +226,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            ExitUnitEvent?.Invoke(_owner, target);
+            ExitUnitEvent?.Invoke(_owner, target, null);
 
             _targets.Remove(target);
         }

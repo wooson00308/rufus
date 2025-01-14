@@ -7,6 +7,7 @@ using static UnityEngine.Mesh;
 [RequireComponent (typeof(FSM))]
 public class Unit : MonoBehaviour, IStatSettable
 {
+    public const int MOVE_SPEED_FACTOR = 100;
     public const string BASE_STATS_KEY = "base";
     public const string ENGAGE_STATS_KEY = "engage";
 
@@ -64,8 +65,6 @@ public class Unit : MonoBehaviour, IStatSettable
         Team = team;
 
         IntializeStats(data);
-
-        UpdateStats(BASE_STATS_KEY, data);
 
         if(!isPlayer)
         {
@@ -158,7 +157,7 @@ public class Unit : MonoBehaviour, IStatSettable
     public void MoveFromTarget(Transform target)
     {
         _agent.isStopped = false;
-        _agent.speed = Status.MoveSpeed.Value;
+        _agent.speed = (Status.MoveSpeed.Value * MOVE_SPEED_FACTOR) * GameTime.DeltaTime;
         _agent.SetDestination(target.position);
         Rotation(target.position - transform.position);
     }
@@ -166,7 +165,7 @@ public class Unit : MonoBehaviour, IStatSettable
     public void Move(Vector2 vector)
     {
         _agent.isStopped = false;
-        _agent.velocity = Status.MoveSpeed.Value * vector;
+        _agent.velocity = GameTime.DeltaTime * (Status.MoveSpeed.Value * MOVE_SPEED_FACTOR) * vector;
         Rotation(vector);
     }
 

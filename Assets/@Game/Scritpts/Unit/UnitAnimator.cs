@@ -18,6 +18,7 @@ public class UnitAnimator : MonoBehaviour
 
     public void Update()
     {
+        _animator.speed = GameTime.TimeScale;
         _renderer.sortingOrder = (int)(_owner.transform.position.y * -100);
     }
 

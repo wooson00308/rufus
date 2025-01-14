@@ -94,7 +94,7 @@ public class Projectile : MonoBehaviour
                 return;
             }
 
-            time += Time.deltaTime;
+            time += GameTime.DeltaTime;
 
             await Awaitable.EndOfFrameAsync();
         }
@@ -168,7 +168,7 @@ public class Projectile : MonoBehaviour
             _direction = (_target.position - transform.position).normalized;
         }
 
-        transform.position += _speed * Time.deltaTime * _direction;
+        transform.position += _speed * GameTime.DeltaTime * _direction;
         Rotation(_direction);
     }
 

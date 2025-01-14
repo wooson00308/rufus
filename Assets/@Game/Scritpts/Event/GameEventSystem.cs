@@ -1,47 +1,60 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class GameEventSystem : SingletonMini<GameEventSystem>
+/// <summary>
+/// TEnum 타입이 반드시 enum 이어야만 하도록 제한
+/// </summary>
+public class GameEventSystem<TEnum> : SingletonMini<GameEventSystem<TEnum>>
+    where TEnum : Enum
 {
-    private readonly Dictionary<string, Action<GameEvent>> _eventDictionary = new();
+    private readonly Dictionary<TEnum, Action<GameEvent>> _eventDictionary = new();
 
-    public void Subscribe(string eventType, Action<GameEvent> listener)
+    /// <summary>
+    /// 단일 리스너 등록
+    /// </summary>
+    public void Subscribe(TEnum eventType, Action<GameEvent> listener)
     {
         if (!_eventDictionary.ContainsKey(eventType))
         {
             _eventDictionary[eventType] = null;
         }
-
         _eventDictionary[eventType] += listener;
     }
 
-    public void Subscribe(string eventType, params Action<GameEvent>[] listeners)
+    /// <summary>
+    /// 여러 리스너 등록
+    /// </summary>
+    public void Subscribe(TEnum eventType, params Action<GameEvent>[] listeners)
     {
         if (!_eventDictionary.ContainsKey(eventType))
         {
             _eventDictionary[eventType] = null;
         }
-
         foreach (var listener in listeners)
         {
             _eventDictionary[eventType] += listener;
         }
     }
 
-    public void Unsubscribe(string eventType, Action<GameEvent> listener)
+    /// <summary>
+    /// 단일 리스너 해제
+    /// </summary>
+    public void Unsubscribe(TEnum eventType, Action<GameEvent> listener)
     {
         if (_eventDictionary.ContainsKey(eventType))
         {
             _eventDictionary[eventType] -= listener;
-            if (_eventDictionary[eventType] == null) // 리스너가 모두 제거되면 삭제
+            if (_eventDictionary[eventType] == null)
             {
                 _eventDictionary.Remove(eventType);
             }
         }
     }
 
-    public void Unsubscribe(string eventType, params Action<GameEvent>[] listeners)
+    /// <summary>
+    /// 여러 리스너 해제
+    /// </summary>
+    public void Unsubscribe(TEnum eventType, params Action<GameEvent>[] listeners)
     {
         if (_eventDictionary.ContainsKey(eventType))
         {
@@ -49,25 +62,29 @@ public class GameEventSystem : SingletonMini<GameEventSystem>
             {
                 _eventDictionary[eventType] -= listener;
             }
-
-            if (_eventDictionary[eventType] == null) // 리스너가 모두 제거되면 삭제
+            if (_eventDictionary[eventType] == null)
             {
                 _eventDictionary.Remove(eventType);
             }
         }
     }
 
-    public void Publish(string eventType, GameEvent gameEvent = null)
+    /// <summary>
+    /// 이벤트 발행
+    /// </summary>
+    public void Publish(TEnum eventType, GameEvent gameEvent = null)
     {
         if (_eventDictionary.TryGetValue(eventType, out var action))
         {
-            action?.Invoke(gameEvent); // 즉시 실행
+            action?.Invoke(gameEvent);
         }
     }
 }
 
+/// <summary>
+/// 이벤트 객체
+/// </summary>
 public class GameEvent
 {
-    public string eventType;
     public object args;
 }

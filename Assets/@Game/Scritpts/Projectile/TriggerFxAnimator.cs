@@ -9,6 +9,11 @@ public class TriggerFxAnimator : MonoBehaviour
         Animator = GetComponent<Animator>();
     }
 
+    public void Update()
+    {
+        Animator.speed = GameTime.TimeScale;
+    }
+
     public void OnDestroyed(AnimationEvent e)
     {
         if(e.stringParameter == "Pool")
