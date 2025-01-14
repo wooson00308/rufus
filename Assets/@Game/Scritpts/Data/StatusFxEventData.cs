@@ -6,9 +6,9 @@ public class StatusFxEventData : FxEventData
 {
     [field: SerializeField] public List<StatusFxData> StatusFxDatas { get; private set; }
 
-    public override void OnEvent(Unit owner, Unit target, object args = null)
+    public override void OnEventToTarget(Unit owner, Unit target)
     {
-        foreach(var statusFx in StatusFxDatas)
+        foreach (var statusFx in StatusFxDatas)
         {
             target.ApplyStatusFx(statusFx);
         }

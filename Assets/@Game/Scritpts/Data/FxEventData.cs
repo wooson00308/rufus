@@ -2,5 +2,6 @@ using UnityEngine;
 
 public abstract class FxEventData : Data
 {
-    public abstract void OnEvent(Unit owner, Unit target, object args = null);
+    public virtual void OnEventToTarget(Unit owner, Unit target) { }
+    public virtual void OnEvent(Unit owner, object args = null) { }
 }

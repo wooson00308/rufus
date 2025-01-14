@@ -5,6 +5,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     private Unit _owner;
 
     [HideInInspector] public IntStat Health { get; private set; }
+    [HideInInspector] public IntStat Mana { get; private set; }
     [HideInInspector] public IntStat Armor { get; private set; }
     [HideInInspector] public IntStat AttackDamage { get; private set; }
     [HideInInspector] public FloatStat AttackSpeed { get; private set; }
@@ -23,6 +24,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     public void IntializeStats(IStats stats)
     {
         Health = new IntStat(stats.Health.Value);
+        Mana = new IntStat(stats.Mana.Value);
         Armor = new IntStat(stats.Armor.Value);
         AttackDamage = new IntStat(stats.AttackDamage.Value);
         AttackRange = new FloatStat(stats.AttackRange.Value);
@@ -45,6 +47,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     public void ResetStats(string key)
     {
         Health.Reset(key);
+        Mana.Reset(key);
         Armor.Reset(key);
         AttackDamage.Reset(key);
         AttackSpeed.Reset(key);
@@ -56,6 +59,7 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     public void UpdateStats(string key, IStats stats)
     {
         Health.Update(key, stats.Health.Value);
+        Mana.Update(key, stats.Mana.Value);
         Armor.Update(key, stats.Armor.Value);
         AttackDamage.Update(key, stats.AttackDamage.Value);
         AttackSpeed.Update(key, stats.AttackSpeed.Value);

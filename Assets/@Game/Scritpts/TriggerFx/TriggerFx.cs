@@ -25,9 +25,9 @@ public class TriggerFx : MonoBehaviour
     public Unit Owner => _owner;
     [field: SerializeField] public TriggerFxData Data { get; private set; }
     public Action DestroyEvent { get; set; }
-    public Action<Unit, Unit, object> EnterUnitEvent { get; set; }
-    public Action<Unit, Unit, object> StayUnitEvent { get; set; }
-    public Action<Unit, Unit, object> ExitUnitEvent { get; set; }
+    public Action<Unit, Unit> EnterUnitEvent { get; set; }
+    public Action<Unit, Unit> StayUnitEvent { get; set; }
+    public Action<Unit, Unit> ExitUnitEvent { get; set; }
     public bool IsDestroy => _isDestroy;
 
     public void Awake()
@@ -42,17 +42,17 @@ public class TriggerFx : MonoBehaviour
 
         foreach(var fxData in Data.EnterFxDatas)
         {
-            EnterUnitEvent += fxData.OnEvent;
+            EnterUnitEvent += fxData.OnEventToTarget;
         }
 
         foreach (var fxData in Data.StayFxDatas)
         {
-            StayUnitEvent += fxData.OnEvent;
+            StayUnitEvent += fxData.OnEventToTarget;
         }
 
         foreach (var fxData in Data.ExitFxDatas)
         {
-            ExitUnitEvent += fxData.OnEvent;
+            ExitUnitEvent += fxData.OnEventToTarget;
         }
 
         _duration = Data.Durtaion;
@@ -142,7 +142,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            EnterUnitEvent?.Invoke(_owner, target, null);
+            EnterUnitEvent?.Invoke(_owner, target);
 
             _targets.Add(target);
 
@@ -176,7 +176,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            StayUnitEvent?.Invoke(_owner, target, null);
+            StayUnitEvent?.Invoke(_owner, target);
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
@@ -190,7 +190,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
             
-            StayUnitEvent?.Invoke(_owner, target, null);
+            StayUnitEvent?.Invoke(_owner, target);
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
@@ -226,7 +226,7 @@ public class TriggerFx : MonoBehaviour
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
 
-            ExitUnitEvent?.Invoke(_owner, target, null);
+            ExitUnitEvent?.Invoke(_owner, target);
 
             _targets.Remove(target);
         }
