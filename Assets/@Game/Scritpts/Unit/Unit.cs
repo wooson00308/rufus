@@ -25,11 +25,14 @@ public class Unit : MonoBehaviour, IStatSettable
     private Unit _lastAttacker;
     private Unit _killer;
 
+    private bool _isPlayer;
     private bool _isInitialized;
     private bool _isActive;
+    private bool _isRevive;
 
     public bool IsInitialized => _isInitialized;
     public bool IsActive => _isActive;
+    public bool IsRevive => _isRevive;
 
     public NavMeshAgent Agent => _agent;
 
@@ -71,7 +74,9 @@ public class Unit : MonoBehaviour, IStatSettable
 
         IntializeStats(data);
 
-        if(!isPlayer)
+        _isPlayer = isPlayer;
+
+        if (!_isPlayer)
         {
             _fsm.StartState<IdleState>();
         }
@@ -82,6 +87,20 @@ public class Unit : MonoBehaviour, IStatSettable
         
 
         _isInitialized = true;
+    }
+
+    public void OnRevive()
+    {
+        ResetStats(ENGAGE_STATS_KEY);
+
+        if (!_isPlayer)
+        {
+            _fsm.StartState<IdleState>();
+        }
+        else
+        {
+            _fsm.StartState<PlayerIdleState>();
+        }
     }
 
     public void OnDisable()
@@ -137,10 +156,13 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         if (Status.IsDeath) return;
 
-        _status.OnDeath(attacker);
+        if(!_isRevive)
+        {
+            _status.OnDeath(attacker);
 
-        _lastAttacker = attacker;
-        _killer = attacker;
+            _lastAttacker = attacker;
+            _killer = attacker;
+        }
 
         _fsm.TransitionTo<DeathState>();
     }

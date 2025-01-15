@@ -86,10 +86,17 @@ public class UnitAnimator : MonoBehaviour
 
     public void OnDeath(AnimationEvent e)
     {
-        StartCoroutine(WaitForDeathDuration(3));
+        if(_owner.IsRevive)
+        {
+            StartCoroutine(WaitForReviveDuration(3));
+        }
+        else
+        {
+            OnDeath();
+        }
     }
 
-    private IEnumerator WaitForDeathDuration(float duration = 0)
+    private IEnumerator WaitForReviveDuration(float duration = 0)
     {
         float time = 0;
         while(time < duration)
@@ -98,6 +105,11 @@ public class UnitAnimator : MonoBehaviour
             yield return null;
         }
 
+        _owner.OnRevive();
+    }
+
+    private void OnDeath()
+    {
         UnitFactory.Instance.DestroyUnit(_owner.GetInstanceID());
 
         GameEventSystem.Instance.Publish((int)UnitEvents.Death, new UnitEventWithAttackerArgs
@@ -105,7 +117,6 @@ public class UnitAnimator : MonoBehaviour
             publisher = _owner,
             attacker = _owner.Killer
         });
-
     }
 
     public void CrossFade(string key, float fadeTime = 0)

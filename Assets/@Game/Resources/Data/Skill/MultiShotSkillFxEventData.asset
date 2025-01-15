@@ -21,8 +21,8 @@ MonoBehaviour:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
     <Description>k__BackingField: 
-    <Duration>k__BackingField: 0
-    <Cooltime>k__BackingField: 1
+    <Duration>k__BackingField: 1
+    <Cooltime>k__BackingField: 0
     <Conditions>k__BackingField:
     - {fileID: 11400000, guid: a386880c43cb1fe4ebcb40fd42b0313d, type: 2}
     <ApplyFxDatas>k__BackingField: []

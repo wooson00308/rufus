@@ -114,6 +114,7 @@ public class Projectile : MonoBehaviour
 
     public void SetDirection(Vector3 dir)
     {
+        _isHoming = false;
         _target = null;
         _direction = dir.normalized;
     }
@@ -152,7 +153,7 @@ public class Projectile : MonoBehaviour
     {
         if (_isHoming && (!_target || !_target.gameObject.activeSelf))
         {
-            OnDestroyFx();
+            SetDirection(_direction);
 
             return;
         }
