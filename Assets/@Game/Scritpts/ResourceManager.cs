@@ -39,7 +39,7 @@ public class ResourceManager : Singleton<ResourceManager>
         {
             // 풀에 사용 가능한 오브젝트가 없다면 새로 생성
             GameObject newObject = Instantiate(prefab, parent);
-            newObject.name = key;
+            newObject.name = newObject.GetInstanceID().ToString();
             return newObject;
         }
     }
