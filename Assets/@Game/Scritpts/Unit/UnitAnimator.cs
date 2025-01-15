@@ -86,7 +86,7 @@ public class UnitAnimator : MonoBehaviour
 
     public void OnDeath(AnimationEvent e)
     {
-        StartCoroutine(WaitForDeathDuration());
+        StartCoroutine(WaitForDeathDuration(3));
     }
 
     private IEnumerator WaitForDeathDuration(float duration = 0)

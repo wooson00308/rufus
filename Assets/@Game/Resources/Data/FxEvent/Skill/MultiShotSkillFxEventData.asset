@@ -17,5 +17,5 @@ MonoBehaviour:
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
   <ProjectileData>k__BackingField: {fileID: 11400000, guid: 81afaa53616d4b04bbfb0592d01d2aa7, type: 2}
-  <HomingDelay>k__BackingField: 0.3
+  <HomingDelay>k__BackingField: 0
   <ProjectileCount>k__BackingField: 15
