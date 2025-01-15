@@ -16,15 +16,14 @@ public class SkillData : Data
 
     public SkillLevelData GetSkillLevelData(int level)
     {
-        int index = level - 1;
-        SkillLevelData defaultData = LevelDatas[^1];
-
-        if (defaultData == null)
+        if (LevelDatas == null || LevelDatas.Count == 0)
         {
-            string errorMessage = $"{Id}의 레벨 별 스킬 데이터가 존재하지 않습니다.";
-            Debug.LogError(errorMessage);
+            Debug.LogError($"{Id}의 레벨 별 스킬 데이터가 비어있습니다.");
             return null;
         }
+
+        int index = level - 1;
+        SkillLevelData defaultData = level >= MaxLevel ? LevelDatas[^1] : LevelDatas[0];
 
         if (index >= MaxLevel || index < 0)
         {
@@ -36,7 +35,6 @@ public class SkillData : Data
 
     [field: SerializeField] public Skill Prefab { get; private set; }
     [field: SerializeField] public List<SkillLevelData> LevelDatas { get; private set; }
-    
 }
 
 [Serializable]
@@ -47,7 +45,7 @@ public class SkillLevelData
     [field: SerializeField] public string Description { get; private set; }
     [field: SerializeField] public float Duration { get; private set; }
     [field: SerializeField] public float Cooltime { get; private set; }
-    [field: SerializeField] public List<ConditionData> Conditions { get; private set; }
+    [field: SerializeField] public List<SkillConditionData> Conditions { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> ApplyFxDatas { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> UseSkillFxDatas { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> RemoveFxDatas { get; private set; }

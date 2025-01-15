@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent (typeof(Animator))]
@@ -85,7 +86,26 @@ public class UnitAnimator : MonoBehaviour
 
     public void OnDeath(AnimationEvent e)
     {
+        StartCoroutine(WaitForDeathDuration());
+    }
+
+    private IEnumerator WaitForDeathDuration(float duration = 0)
+    {
+        float time = 0;
+        while(time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+
         UnitFactory.Instance.DestroyUnit(_owner.GetInstanceID());
+
+        GameEventSystem.Instance.Publish((int)UnitEvents.Death, new UnitEventWithAttackerArgs
+        {
+            publisher = _owner,
+            attacker = _owner.Killer
+        });
+
     }
 
     public void CrossFade(string key, float fadeTime = 0)

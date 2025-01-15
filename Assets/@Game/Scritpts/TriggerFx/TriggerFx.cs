@@ -141,12 +141,18 @@ public class TriggerFx : MonoBehaviour
         if(collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
 
             EnterUnitEvent?.Invoke(_owner, target);
 
             _targets.Add(target);
 
-            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
+            if (Data.OnDestroyEventWhenCollideUnit)
+            {
+                OnDestroyEvent();
+            }
+
+            else if(Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
                 OnDestroyEvent();
             }
@@ -157,6 +163,7 @@ public class TriggerFx : MonoBehaviour
         else if(collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
             if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
@@ -175,6 +182,7 @@ public class TriggerFx : MonoBehaviour
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
 
             StayUnitEvent?.Invoke(_owner, target);
 
@@ -186,10 +194,11 @@ public class TriggerFx : MonoBehaviour
             StartCoroutine(EventPerSeconds(collision));
         }
 
-        else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
-            if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
-            
+            if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
+
             StayUnitEvent?.Invoke(_owner, target);
 
             if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
@@ -225,16 +234,18 @@ public class TriggerFx : MonoBehaviour
         if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
             if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
 
             ExitUnitEvent?.Invoke(_owner, target);
 
             _targets.Remove(target);
         }
 
-        else if (collision.TryGetComponent(out Projectile projectile) && projectile.gameObject.activeSelf)
+        else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
-            if (!_onEventFromOwnerTriggerFx && projectile.Owner.EqualsUnit(_owner)) return;
-            
+            if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
+
             //TODO
         }
     }

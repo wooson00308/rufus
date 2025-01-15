@@ -2,16 +2,20 @@ using UnityEngine;
 
 public enum UnitEvents
 {
-    OnUseSkill = 10001,
-    OnAttack,
-    OnStun,
-    OnHit,
-    OnRevive,
-    OnDeath,
-    OnKill
+    Spawn = 10001,
+    Attack,
+    Stun,
+    Hit,
+    Revive,
+    Death,
 }
 
 public class UnitEventArgs
 {
     public Unit publisher;
+}
+
+public class UnitEventWithAttackerArgs: UnitEventArgs
+{
+    public Unit attacker;
 }

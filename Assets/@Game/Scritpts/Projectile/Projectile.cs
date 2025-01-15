@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private Transform _model;
     private Unit _owner;
     private ProjectileData _data;
+    private Rigidbody2D _rigidbody;
 
     private TriggerFx[] _triggerFxs;
     private bool _isFired;
@@ -15,6 +16,7 @@ public class Projectile : MonoBehaviour
 
     private float _speed;
     private float _duration;
+    private float _rotationSpeed;
 
     private bool _isHoming;
     private bool _isDestroyed;
@@ -24,6 +26,7 @@ public class Projectile : MonoBehaviour
     public void Awake()
     {
         _triggerFxs = GetComponentsInChildren<TriggerFx>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     public void OnDisable()
@@ -41,6 +44,7 @@ public class Projectile : MonoBehaviour
         _data = data;
 
         _duration = _data.Duration.Value;
+        _rotationSpeed = _data.RotationSpeed.Value;
 
         foreach (var triggerFx in _triggerFxs)
         {
@@ -99,14 +103,13 @@ public class Projectile : MonoBehaviour
             await Awaitable.EndOfFrameAsync();
         }
 
-        OnDestroyed();
+        OnDestroyFx();
     }
 
     public void SetTarget(Transform target)
     {
         _isHoming = true;
         _target = target;
-        _direction = (_target.position - transform.position).normalized;
     }
 
     public void SetDirection(Vector3 dir)
@@ -147,28 +150,30 @@ public class Projectile : MonoBehaviour
 
     private void Move()
     {
-        if (_isHoming && !_target.gameObject.activeSelf)
+        if (_isHoming && (!_target || !_target.gameObject.activeSelf))
         {
-            if (!_isDestroyed)
-            {
-                _isDestroyed = true;
-
-                foreach (var triggerFx in _triggerFxs)
-                {
-                    if (!triggerFx.gameObject.activeSelf) continue;
-                    triggerFx.OnDestroyEvent();
-                }
-            }
+            OnDestroyFx();
 
             return;
         }
 
+        Vector2 targetDirection = _direction;
         if (_target != null)
         {
-            _direction = (_target.position - transform.position).normalized;
+            targetDirection = (_target.position - transform.position).normalized;
         }
 
-        transform.position += _speed * GameTime.DeltaTime * _direction;
+        if (_isHoming)
+        {
+            _direction = Vector2.Lerp(_direction, targetDirection, _rotationSpeed * Time.fixedDeltaTime).normalized;
+        }
+        else
+        {
+            _direction = targetDirection;
+        }
+
+        _rigidbody.linearVelocity = _direction * _speed;
+
         Rotation(_direction);
     }
 
@@ -177,11 +182,25 @@ public class Projectile : MonoBehaviour
         if (_model == null) return;
         if (!_isFired) return;
 
-        // 방향 벡터의 x축이 양수면 오른쪽, 음수면 왼쪽을 바라보도록 처리
         if (rotDir.x != 0 || rotDir.y != 0)
         {
-            float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg; // 2D 벡터 방향을 각도로 변환
-            _model.transform.rotation = Quaternion.Euler(0, 0, angle);
+            float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
+
+    public void OnDestroyFx()
+    {
+        if (!_isDestroyed)
+        {
+            _isDestroyed = true;
+            _speed = 0;
+
+            foreach (var triggerFx in _triggerFxs)
+            {
+                if (!triggerFx.gameObject.activeSelf) continue;
+                triggerFx.OnDestroyEvent();
+            }
         }
     }
 

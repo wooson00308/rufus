@@ -20,8 +20,7 @@ MonoBehaviour:
   <Prefab>k__BackingField: {fileID: 4509992889323842399, guid: 37bc97f4dcf85ad499a18a0388dd32e4, type: 3}
   <MoveSpeed>k__BackingField:
     _value: 5
+  <RotationSpeed>k__BackingField:
+    _value: 10
   <Duration>k__BackingField:
     _value: 8
-  <StatusFxDatas>k__BackingField: []
-  <DamageCoefficient>k__BackingField:
-    _value: 100

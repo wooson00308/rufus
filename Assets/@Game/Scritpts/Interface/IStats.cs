@@ -1,9 +1,8 @@
-using UnityEngine;
-
 public interface IStats
 {
     public IntStat Health { get; }
     public IntStat Mana { get; }
+    public IntStat ManaRegenPerSeconds { get; }
     public IntStat Armor { get;}
     public IntStat AttackDamage { get; }
     public FloatStat AttackSpeed { get; }

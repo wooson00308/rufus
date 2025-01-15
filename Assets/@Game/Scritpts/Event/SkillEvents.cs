@@ -6,3 +6,8 @@ public enum SkillEvents
     ApplySkill,
     RemoveSkill 
 }
+
+public class SkillEventArgs: UnitEventArgs
+{
+    public int skillId;
+}

@@ -111,11 +111,15 @@ public class UnitFactory : Singleton<UnitFactory>
 
     public List<Unit> GetAllActiveUnitsInAoERadius(Unit target, List<Unit> units, float radius)
     {
+        if (target == null) return null;
         List<Unit> unitsInRadius = new() { target };
         Vector3 unitPosition = target.transform.position;
 
         foreach (Unit otherUnit in units)
         {
+            if (otherUnit == null) 
+                continue;
+
             if (otherUnit == target)
                 continue;
 

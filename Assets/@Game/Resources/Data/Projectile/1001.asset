@@ -19,9 +19,8 @@ MonoBehaviour:
   <HasHoming>k__BackingField: 1
   <Prefab>k__BackingField: {fileID: 4509992889323842399, guid: 34b56ea769a8d634385fce393a86bd0e, type: 3}
   <MoveSpeed>k__BackingField:
+    _value: 8
+  <RotationSpeed>k__BackingField:
     _value: 3
   <Duration>k__BackingField:
     _value: 8
-  <StatusFxDatas>k__BackingField: []
-  <DamageCoefficient>k__BackingField:
-    _value: 100

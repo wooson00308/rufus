@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.Mesh;
 
 [RequireComponent (typeof(Status))]
 [RequireComponent (typeof(FSM))]
@@ -21,6 +20,10 @@ public class Unit : MonoBehaviour, IStatSettable
     private UnitAnimator _model;
     private Inventory _inventory;
     private TargetDetector _detector;
+    private readonly Dictionary<int, Skill> _skillDic = new();
+    [SerializeField] private Transform _skillStorage;
+    private Unit _lastAttacker;
+    private Unit _killer;
 
     private bool _isInitialized;
     private bool _isActive;
@@ -36,6 +39,8 @@ public class Unit : MonoBehaviour, IStatSettable
     public Status Status => _status;
     public Unit Target => _detector.Target;
     public List<Unit> Targets => _detector.Targets;
+    public Unit LastAttacker => _lastAttacker;
+    public Unit Killer => _killer;
 
     public void Awake()
     {
@@ -81,6 +86,8 @@ public class Unit : MonoBehaviour, IStatSettable
 
     public void OnDisable()
     {
+        _skillDic.Clear();
+
         _isInitialized = false;
         _isActive = false;
     }
@@ -112,6 +119,14 @@ public class Unit : MonoBehaviour, IStatSettable
 
         _status.OnHit(damage, attacker);
 
+        _lastAttacker = attacker;
+
+        GameEventSystem.Instance.Publish((int)UnitEvents.Hit, new UnitEventWithAttackerArgs
+        {
+            publisher = this,
+            attacker = _lastAttacker
+        });
+
         if (Status.Health.Value <= 0)
         {
             OnDeath(attacker);
@@ -123,6 +138,10 @@ public class Unit : MonoBehaviour, IStatSettable
         if (Status.IsDeath) return;
 
         _status.OnDeath(attacker);
+
+        _lastAttacker = attacker;
+        _killer = attacker;
+
         _fsm.TransitionTo<DeathState>();
     }
     #endregion
@@ -205,4 +224,28 @@ public class Unit : MonoBehaviour, IStatSettable
     }
 
     #endregion
+
+    public void ApplySkill(SkillData skillData)
+    {
+        if (_skillDic.TryGetValue(skillData.Id, out var skill))
+        {
+            skill.LevelUp();
+        }
+        else
+        {
+            var skillObj = ResourceManager.Instance.Spawn(skillData.Prefab.gameObject);
+            var skillComponent = skillObj.GetComponent<Skill>();
+            skillComponent.Initialized(this, skillData);
+
+            _skillDic.Add(skillData.Id, skillComponent);
+
+            skillObj.transform.SetParent(_skillStorage);
+
+            GameEventSystem.Instance.Publish((int)SkillEvents.ApplySkill, new SkillEventArgs
+            {
+                skillId = skillData.Id,
+                publisher = this
+            });
+        }
+    }
 }

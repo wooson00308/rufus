@@ -38,6 +38,7 @@ public static class Extension
 
     public static bool EqualsUnit(this Unit unit, Unit target)
     {
+        if (unit == null || target == null) return false;
         return unit.GetInstanceID().Equals(target.GetInstanceID());
     }
 }
