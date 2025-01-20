@@ -64,6 +64,36 @@ public class Unit : MonoBehaviour, IStatSettable
         _agent.updateUpAxis = false;
     }
 
+    private void StartCasting(object args)
+    {
+        if (args is not CastingStartEventArgs castingArgs) return;
+
+        _fsm.TransitionTo<CastingState>();
+    }
+
+    private void EndCasting(object args)
+    {
+        if (args is not CastingEndEventArgs castingArgs) return;
+
+        if (castingArgs.isSuccess)
+        {
+
+        }
+        else
+        {
+            if(castingArgs.failedCode == (int)CastingFailedTypes.CancelTyping)
+            {
+
+            }
+            else if(castingArgs.failedCode == (int)CastingFailedTypes.FailedTyping)
+            {
+
+            }
+        }
+ 
+        _fsm.TransitionTo<PlayerIdleState>();
+    }
+
     public void Initialized(UnitData data, Team team = Team.Enemy, bool isPlayer = false)
     {
         _isActive = true;
@@ -83,8 +113,10 @@ public class Unit : MonoBehaviour, IStatSettable
         else
         {
             _fsm.StartState<PlayerIdleState>();
+
+            GameEventSystem.Instance.Subscribe((int)SystemEvents.CasingStart, StartCasting);
+            GameEventSystem.Instance.Subscribe((int)SystemEvents.CasingEnd, EndCasting);
         }
-        
 
         _isInitialized = true;
     }
@@ -109,6 +141,12 @@ public class Unit : MonoBehaviour, IStatSettable
 
         _isInitialized = false;
         _isActive = false;
+
+        if (_isPlayer)
+        {
+            GameEventSystem.Instance.Unsubscribe((int)UnitEvents.Casting, StartCasting);
+            GameEventSystem.Instance.Unsubscribe((int)UnitEvents.Casting, EndCasting);
+        }
     }
 
     public void SetActive(bool value)

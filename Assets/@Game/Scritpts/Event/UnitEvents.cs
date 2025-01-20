@@ -2,9 +2,10 @@ using UnityEngine;
 
 public enum UnitEvents
 {
-    Spawn = 10001,
+    Spawn = 200,
     Attack,
     Stun,
+    Casting,
     Hit,
     Revive,
     Death,
@@ -16,6 +17,15 @@ public class UnitEventArgs
     public Unit publisher;
 }
 
+public class UnitCastingEventArgs : UnitEventArgs
+{
+    
+}
+
+public class UnitCastingEndEventArgs : UnitEventArgs
+{
+    public bool isSuccess;
+}
 
 public class UnitHitEventArgs : UnitEventArgs
 {

@@ -106,6 +106,11 @@ public class UnitAnimator : MonoBehaviour
         }
 
         _owner.OnRevive();
+
+        GameEventSystem.Instance.Publish((int)UnitEvents.Revive, new UnitEventArgs
+        {
+            publisher = _owner,
+        });
     }
 
     private void OnDeath()

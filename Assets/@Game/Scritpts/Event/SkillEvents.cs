@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum SkillEvents
 {
-    UseSkill = 11001,
+    UseSkill = 300,
     ApplySkill,
     RemoveSkill 
 }

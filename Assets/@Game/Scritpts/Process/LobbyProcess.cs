@@ -15,7 +15,7 @@ public class LobbyProcess : Process
         player.Inventory.Equip(_spawnConfig[0].item);
         player.ApplySkill(_spawnConfig[0].skill);
 
-        var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, 100, _spawnConfig[1].point.position, null, Team.Enemy);
+        var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, _spawnConfig[1].count, _spawnConfig[1].point.position, null, Team.Enemy);
         foreach (var enemy in enemys)
         {
             var item = _spawnConfig[1].item;
@@ -45,4 +45,5 @@ public class SpawnConfig
     public UnitData unit;
     public ItemData item;
     public SkillData skill;
+    public int count;
 }
