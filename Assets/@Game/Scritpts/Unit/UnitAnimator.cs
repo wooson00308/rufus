@@ -112,10 +112,15 @@ public class UnitAnimator : MonoBehaviour
     {
         UnitFactory.Instance.DestroyUnit(_owner.GetInstanceID());
 
-        GameEventSystem.Instance.Publish((int)UnitEvents.Death, new UnitEventWithAttackerArgs
+        GameEventSystem.Instance.Publish((int)UnitEvents.Death, new UnitEventArgs
         {
             publisher = _owner,
-            attacker = _owner.Killer
+        });
+
+        GameEventSystem.Instance.Publish((int)UnitEvents.Kill, new UnitAttackEventArgs
+        {
+            publisher = _owner.Killer,
+            target = _owner,
         });
     }
 

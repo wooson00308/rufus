@@ -140,10 +140,16 @@ public class Unit : MonoBehaviour, IStatSettable
 
         _lastAttacker = attacker;
 
-        GameEventSystem.Instance.Publish((int)UnitEvents.Hit, new UnitEventWithAttackerArgs
+        GameEventSystem.Instance.Publish((int)UnitEvents.Hit, new UnitHitEventArgs
         {
             publisher = this,
-            attacker = _lastAttacker
+            attacker = _lastAttacker,
+        });
+
+        GameEventSystem.Instance.Publish((int)UnitEvents.Attack, new UnitAttackEventArgs
+        {
+            publisher = _lastAttacker,
+            target = this,
         });
 
         if (Status.Health.Value <= 0)

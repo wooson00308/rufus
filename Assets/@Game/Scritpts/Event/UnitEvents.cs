@@ -8,6 +8,7 @@ public enum UnitEvents
     Hit,
     Revive,
     Death,
+    Kill
 }
 
 public class UnitEventArgs
@@ -15,7 +16,13 @@ public class UnitEventArgs
     public Unit publisher;
 }
 
-public class UnitEventWithAttackerArgs: UnitEventArgs
+
+public class UnitHitEventArgs : UnitEventArgs
 {
     public Unit attacker;
+}
+
+public class UnitAttackEventArgs : UnitEventArgs
+{
+    public Unit target;
 }

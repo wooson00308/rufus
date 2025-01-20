@@ -180,6 +180,10 @@ public class Skill : MonoBehaviour
 
                 // RemoveFxDatas 같은 걸 여기서 호출할 수도 있음
                 // (만약 "스킬 효과가 끝나는 시점"에만 발동하는 로직이 필요하다면)
+                foreach (var fxEventData in _currentLevelData.UseSkillFxDatas)
+                {
+                    fxEventData.OnEndEvent(_owner, this);
+                }
             }
         }
     }

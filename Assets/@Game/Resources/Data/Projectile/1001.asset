@@ -21,6 +21,6 @@ MonoBehaviour:
   <MoveSpeed>k__BackingField:
     _value: 8
   <RotationSpeed>k__BackingField:
-    _value: 1
+    _value: 5
   <Duration>k__BackingField:
     _value: 8

@@ -8,6 +8,7 @@ public abstract class SkillConditionData : Data
         if (gameEvent is not UnitEventArgs args) return false;
         if (args is SkillEventArgs skillArgs && 
             skillArgs.skillId != skill.Data.Id) return false;
+        if (!args.publisher.EqualsUnit(skill.Owner)) return false;
         
         return true;
     }
