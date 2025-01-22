@@ -8,11 +8,11 @@ public enum SystemEvents
     CasingEnd,
 }
 
-public enum CastingFailedTypes
+public enum CastingResultCode
 {
-    None = 10,
-    FailedTyping,
-    CancelTyping,
+    Success = 10,
+    Error_FailedTyping,
+    Error_CancelTyping,
 }
 
 public class SystemEventArgs
@@ -22,8 +22,7 @@ public class SystemEventArgs
 
 public class CastingSystemEventArgs : SystemEventArgs
 {
-    public string answer;
-    public string typedString;
+
 }
 
 public class CastingStartEventArgs: CastingSystemEventArgs
@@ -33,11 +32,12 @@ public class CastingStartEventArgs: CastingSystemEventArgs
 
 public class CastingInputEventArgs : CastingSystemEventArgs
 {
-
+    public string typedString;
 }
 
 public class CastingEndEventArgs: CastingSystemEventArgs
 {
+    public SkillData skillData;
     public bool isSuccess;
-    public int failedCode;
+    public int resultCode;
 }

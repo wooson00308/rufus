@@ -20,12 +20,13 @@ public class MultiShotSkillFxEventData : SkillFxEventData
 
         for (int index = 0; index < count; index++)
         {
+            yield return null;
+
             if (targets == null)
             {
-                yield break;
+                OnFireProjectile(owner);
+                continue;
             }
-
-            yield return null;
 
             if (index >= targets.Count && index > 0)
             {
@@ -35,13 +36,11 @@ public class MultiShotSkillFxEventData : SkillFxEventData
 
             Unit target = targets[index];
 
-            if (target == null) continue;
-
             OnFireProjectile(owner, target);
         }
     }
 
-    private void OnFireProjectile(Unit owner, Unit target)
+    private void OnFireProjectile(Unit owner, Unit target = null)
     {
         if (ProjectileData == null) return;
 

@@ -81,11 +81,11 @@ public class Unit : MonoBehaviour, IStatSettable
         }
         else
         {
-            if(castingArgs.failedCode == (int)CastingFailedTypes.CancelTyping)
+            if(castingArgs.resultCode == (int)CastingResultCode.Error_CancelTyping)
             {
 
             }
-            else if(castingArgs.failedCode == (int)CastingFailedTypes.FailedTyping)
+            else if(castingArgs.resultCode == (int)CastingResultCode.Error_FailedTyping)
             {
 
             }

@@ -10,7 +10,7 @@ public class Skill : MonoBehaviour
     private Unit _owner;
     private SkillData _data;
     private SkillLevelData _currentLevelData;
-    private readonly Dictionary<SkillConditionData, Action<object>> _conditionActions = new();
+    private readonly Dictionary<ConditionData, Action<object>> _conditionActions = new();
 
     private int _level = 1;
     private bool _isInitialized;
@@ -76,7 +76,7 @@ public class Skill : MonoBehaviour
             GameEventSystem.Instance.Subscribe(condition.EventId, _conditionActions[condition]);
         }
 
-        Action<object> OnEvent(SkillConditionData condition)
+        Action<object> OnEvent(ConditionData condition)
         {
             // 미리 delegate(람다) 생성 후 저장
             return (gameEvent) => { condition.TryUseSkill(this, gameEvent); };

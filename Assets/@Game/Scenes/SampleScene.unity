@@ -585,7 +585,7 @@ MonoBehaviour:
     unit: {fileID: 11400000, guid: eaee63f576020b149960410b9d318079, type: 2}
     item: {fileID: 11400000, guid: 48db1683e08487541b17421e9b8b2c89, type: 2}
     skill: {fileID: 0}
-    count: 0
+    count: 100
 --- !u!1 &911964144
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,8 +674,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b39ee5d381e82e74aaba92ea3aca9536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _correctAnswer: HELLO
-  _typingDuration: 5
+  _skillDatas:
+  - {fileID: 11400000, guid: 0f6cd8632cf7c4c4981946e002f06f59, type: 2}
 --- !u!1 &1063439358
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,14 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
+
 
 public class CastingSystem : Singleton<CastingSystem>
 {
+    [SerializeField] private List<SkillData> _skillDatas;
 
-    [SerializeField] private string _correctAnswer = "HELLO"; // 정답 예시
-    [SerializeField] private float _typingDuration = 5f;      // 제한 시간(초)
+    private List<Cast> _castList = new();
 
     private bool _isTyping = false;   
-    private float _currentDuration = 0f; 
     private string _typedString = ""; 
 
     public void Update()
@@ -21,39 +23,54 @@ public class CastingSystem : Singleton<CastingSystem>
 
         if (!_isTyping) return;
 
-        _currentDuration -= Time.deltaTime;
-        if (_currentDuration <= 0f || Input.GetKeyDown(KeyCode.Return))
-        {
-            CancelTyping();
-            return;
-        }
-
-        foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
+        foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
         {
             if (Input.GetKeyDown(keyCode))
             {
+                if (keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter)
+                {
+                    SkillData data = null;
+                    foreach (var skillData in _skillDatas)
+                    {
+                        if (_castList.SequenceEqual(skillData.Casts))
+                        {
+                            data = skillData;
+                            break;
+                        }
+                    }
+
+                    if (data == null)
+                    {
+                        OnFailTyping();
+                    }
+                    else
+                    {
+                        OnSuccessTyping(data);
+                    }
+
+                    return;
+                }
+
                 if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z)
                 {
                     string inputChar = keyCode.ToString();
                     string testString = _typedString + inputChar;
 
-                    if (_correctAnswer.StartsWith(testString))
+                    foreach(var cast in Enum.GetValues(typeof(Cast)))
                     {
-                        _typedString = testString;
-
-                        OnValidKeyInput(inputChar, _typedString);
-
-                        if (_typedString.Length == _correctAnswer.Length)
+                        if (cast.ToString().StartsWith(testString))
                         {
-                            OnSuccessTyping();
-                            return;
+                            _typedString = testString;
+
+                            OnValidKeyInput(inputChar, _typedString);
+
+                            if (_typedString.Length == cast.ToString().Length)
+                            {
+                                _castList.Add((Cast)cast);
+                                _typedString = string.Empty;
+                                return;
+                            }
                         }
-                    }
-                    else
-                    {
-                        // 오타 -> 실패 처리
-                        OnFailTyping();
-                        return;
                     }
                 }
             }
@@ -63,14 +80,12 @@ public class CastingSystem : Singleton<CastingSystem>
     private void StartTyping()
     {
         _isTyping = true;
-        _currentDuration = _typingDuration;
         _typedString = "";
         Debug.Log("타이핑 시작!");
 
-        GameEventSystem.Instance.Publish((int)SystemEvents.CasingStart, new CastingStartEventArgs
-        {
-            
-        });
+        _castList.Clear();
+
+        GameEventSystem.Instance.Publish((int)SystemEvents.CasingStart, new CastingStartEventArgs());
     }
 
     private void EndTyping()
@@ -80,39 +95,26 @@ public class CastingSystem : Singleton<CastingSystem>
         Debug.Log("타이핑 종료!");
     }
 
-    private void CancelTyping()
-    {
-        Debug.Log("제한 시간 만료로 타이핑 취소");
-        GameEventSystem.Instance.Publish((int)SystemEvents.CasingStart, new CastingStartEventArgs
-        {
-            answer = _correctAnswer,
-            typedString = _typedString
-        });
-        EndTyping();
-    }
-
     private void OnFailTyping()
     {
         Debug.Log("오타 발생! 실패 처리");
         GameEventSystem.Instance.Publish((int)SystemEvents.CasingEnd, new CastingEndEventArgs
         {
-            answer = _correctAnswer,
-            typedString = _typedString,
             isSuccess = false,
-            failedCode = (int)CastingFailedTypes.FailedTyping
+            resultCode = (int)CastingResultCode.Error_FailedTyping
         });
         EndTyping();
     }
 
-    private void OnSuccessTyping()
+    private void OnSuccessTyping(SkillData data)
     {
         Debug.Log("정답 성공! 성공 처리");
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CasingEnd, new CastingEndEventArgs
         {
-            answer = _correctAnswer,
-            typedString = _typedString,
+            skillData = data,
             isSuccess = true,
+            resultCode = (int)CastingResultCode.Success
         });
         EndTyping();
     }
@@ -121,10 +123,6 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         Debug.Log($"유효 입력 발생: {latestChar}, 현재 입력 누적: {currentString}");
 
-        GameEventSystem.Instance.Publish((int)SystemEvents.CasingStart, new CastingInputEventArgs
-        {
-            answer = _correctAnswer,
-            typedString = _typedString
-        });
+        GameEventSystem.Instance.Publish((int)SystemEvents.CasingStart, new CastingInputEventArgs());
     }
 }

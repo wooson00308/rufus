@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillData", menuName = "Scriptable Objects/SkillData")]
 public class SkillData : Data
 {
+    [field:SerializeField]public List<Cast> Casts { get; private set; }
+
     public int MaxLevel
     {
         get
@@ -47,7 +49,7 @@ public class SkillLevelData
     [field: SerializeField] public float Duration { get; private set; }
     [field: SerializeField] public float Cooltime { get; private set; }
 
-    [field: SerializeField] public List<SkillConditionData> Conditions { get; private set; }
+    [field: SerializeField] public List<ConditionData> Conditions { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> ApplyFxDatas { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> UseSkillFxDatas { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> RemoveFxDatas { get; private set; }

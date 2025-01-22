@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bc487da81869624fa2bcecf22534e99, type: 3}
-  m_Name: MultiShotSkillFxEventData
+  m_Name: MultiShotSkillConditionData
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 0
   <Name>k__BackingField: 
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
-  UnitEvent: 10004
+  UnitEvent: 207

@@ -1,9 +1,7 @@
 using UnityEngine;
-public abstract class SkillConditionData : Data
+public abstract class SkillConditionData : ConditionData
 {
-    public virtual int EventId { get; set; }
-
-    public virtual bool IsSatisfied(Skill skill, object gameEvent)
+    public override bool IsSatisfied(Skill skill, object gameEvent)
     {
         if (gameEvent is not UnitEventArgs args) return false;
         if (args is SkillEventArgs skillArgs && 
@@ -11,12 +9,5 @@ public abstract class SkillConditionData : Data
         if (!args.publisher.EqualsUnit(skill.Owner)) return false;
         
         return true;
-    }
-
-    public void TryUseSkill(Skill skill, object gameEvent)
-    {
-        if (!IsSatisfied(skill, gameEvent)) return;
-
-        skill.UseSkill();
     }
 }

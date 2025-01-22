@@ -16,15 +16,17 @@ MonoBehaviour:
   <Name>k__BackingField: 
   <DisplayName>k__BackingField: 
   <Description>k__BackingField: 
+  <Casts>k__BackingField: 00000000
   <Prefab>k__BackingField: {fileID: 2012760596107155170, guid: deacf1b5f3d142942ba7fc1bf50cd369, type: 3}
   <LevelDatas>k__BackingField:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
+    <NeedMana>k__BackingField: 0
     <Description>k__BackingField: 
     <Duration>k__BackingField: 1
     <Cooltime>k__BackingField: 0
     <Conditions>k__BackingField:
-    - {fileID: 11400000, guid: a386880c43cb1fe4ebcb40fd42b0313d, type: 2}
+    - {fileID: 11400000, guid: 0931b18517f667b41b8d4faf2cfacd67, type: 2}
     <ApplyFxDatas>k__BackingField: []
     <UseSkillFxDatas>k__BackingField:
     - {fileID: 11400000, guid: 816a9cdc45fd20845bd4de3d3705cb7c, type: 2}
