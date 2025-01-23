@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CastingEventSkillConditionData", menuName = "Scriptable Objects/CastingEventSkillConditionData")]
 public class CastingEventSkillConditionData : ConditionData
 {
-    public override int EventId => (int)SystemEvents.CasingEnd;
+    public override int EventId => (int)SystemEvents.CastingEnd;
 
     public override bool IsSatisfied(Skill skill, object gameEvent)
     {

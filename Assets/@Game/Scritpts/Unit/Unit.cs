@@ -114,8 +114,8 @@ public class Unit : MonoBehaviour, IStatSettable
         {
             _fsm.StartState<PlayerIdleState>();
 
-            GameEventSystem.Instance.Subscribe((int)SystemEvents.CasingStart, StartCasting);
-            GameEventSystem.Instance.Subscribe((int)SystemEvents.CasingEnd, EndCasting);
+            GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingStart, StartCasting);
+            GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingEnd, EndCasting);
         }
 
         _isInitialized = true;

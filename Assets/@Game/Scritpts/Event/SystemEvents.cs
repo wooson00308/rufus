@@ -3,9 +3,11 @@ using UnityEngine;
 public enum SystemEvents
 {
     None = 100,
-    CasingStart,
-    Casing,
-    CasingEnd,
+    CastingStart,
+    Casting,
+    CastingRemove,
+    CastingInput,
+    CastingEnd,
 }
 
 public enum CastingResultCode

@@ -13,20 +13,21 @@ public class LobbyProcess : Process
         var player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
         _camera.Follow = player.transform;
         player.Inventory.Equip(_spawnConfig[0].item);
-        player.ApplySkill(_spawnConfig[0].skill);
+
+        var skillDatas = CastingSystem.Instance.SkillDatas;
+
+        foreach (var data in skillDatas)
+        {
+            player.ApplySkill(data);
+        }
 
         var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, _spawnConfig[1].count, _spawnConfig[1].point.position, null, Team.Enemy);
         foreach (var enemy in enemys)
         {
             var item = _spawnConfig[1].item;
-            var skill = _spawnConfig[1].skill;
             if (item)
             {
                 enemy.Inventory.Equip(_spawnConfig[1].item);
-            }
-            if (skill)
-            {
-                player.ApplySkill(_spawnConfig[1].skill);
             }
         }
     }
@@ -44,6 +45,5 @@ public class SpawnConfig
     public Transform point;
     public UnitData unit;
     public ItemData item;
-    public SkillData skill;
     public int count;
 }

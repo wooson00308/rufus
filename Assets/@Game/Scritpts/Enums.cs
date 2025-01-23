@@ -10,4 +10,5 @@ public enum Cast
     WEAPON,
     ENCHENT,
     ARROW,
+    SHIELD,
 }
