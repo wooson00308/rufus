@@ -7,7 +7,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(FSM))]
 public class Unit : MonoBehaviour, IStatSettable
 {
-    public const int MOVE_SPEED_FACTOR = 100;
+    public const int MOVE_SPEED_FACTOR = 50;
     public const string BASE_STATS_KEY = "base";
     public const string ENGAGE_STATS_KEY = "engage";
 

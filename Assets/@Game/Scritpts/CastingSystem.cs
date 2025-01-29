@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class CastingSystem : Singleton<CastingSystem>
 {
@@ -80,24 +81,21 @@ public class CastingSystem : Singleton<CastingSystem>
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            if (_successLevel > 0)
+            {
+                SuccessCasting();
+            }
+        }
+
         if (_isTyping)
         {
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
                 if (Input.GetKeyDown(keyCode))
                 {
-                    if (keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter)
-                    {
-                        if(_successLevel == 0)
-                        {
-                            EndCasting(CancelEventArgs);
-                        }
-                        else
-                        {
-                            SuccessCasting();
-                        }
-                    }
-                    else if (keyCode == KeyCode.Backspace)
+                    if (keyCode == KeyCode.Backspace)
                     {
                         RemoveTyping();
                     }
@@ -141,6 +139,8 @@ public class CastingSystem : Singleton<CastingSystem>
         _isTyping = true;
         Debug.Log("타이핑 시작!");
 
+        GameTime.TimeScale = 0.25f;
+
         _currentLevelData = _skill.Data.GetSkillLevelData(_castLevel);
         _castString = _currentLevelData.Cast;
 
@@ -148,6 +148,7 @@ public class CastingSystem : Singleton<CastingSystem>
         {
             castString = _castString,
             typedString = _typedString,
+            level = _castLevel
         });
     }
 
@@ -170,13 +171,16 @@ public class CastingSystem : Singleton<CastingSystem>
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
         {
             typedString = _typedString,
-            castString = _castString
+            castString = _castString,
+            level = _castLevel
         });
     }
 
     private void EndTyping(bool isPause)
     {
-        if(!isPause)
+        GameTime.TimeScale = 1f;
+
+        if (!isPause)
         {
             _typedString = "";
             _successLevel = 0;
@@ -190,6 +194,7 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private void EndCasting(CastingEndEventArgs args)
     {
+        args.level = _castLevel;
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, args);
         var isPause = args.Equals(CancelEventArgs);
         EndTyping(isPause);
@@ -219,7 +224,8 @@ public class CastingSystem : Singleton<CastingSystem>
             keyString = key,
             isTypo = isTypo,
             typedString = _typedString,
-            castString = _castString
+            castString = _castString,
+            level = _castLevel
         });
     }
 
@@ -244,6 +250,7 @@ public class CastingSystem : Singleton<CastingSystem>
             {
                 typedString = currentString,
                 castString = _castString,
+                level = _castLevel
             });
         }
     }

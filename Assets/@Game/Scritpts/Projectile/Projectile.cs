@@ -172,7 +172,7 @@ public class Projectile : MonoBehaviour
             _direction = targetDirection;
         }
 
-        _rigidbody.linearVelocity = _direction * _speed;
+        _rigidbody.linearVelocity = GameTime.DeltaTime * (Unit.MOVE_SPEED_FACTOR * _speed) * _direction ;
 
         Rotation(_direction);
     }

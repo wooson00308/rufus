@@ -20,6 +20,8 @@ public class SkillHudView : BaseView
     private bool _isCastingInput;
     private bool _isProcessingTypoFx;
 
+    private Color _darkGray = new Color(0.25f, 0.25f, 0.25f);
+
     public void Awake()
     {
         BindUI();
@@ -62,8 +64,8 @@ public class SkillHudView : BaseView
         _isCasting = true;
         _isCastingStart = true;
 
-        UpdateCastingString(startArgs.typedString, startArgs.castString);
-        UpdateText(Texts.CastResultText, $"영창 실행");
+        UpdateCastingString(startArgs.level, startArgs.typedString, startArgs.castString);
+        UpdateText(Texts.CastResultText, $"영창 모드");
         GetText(Texts.CastResultText).color = Color.white;
     }
 
@@ -77,7 +79,7 @@ public class SkillHudView : BaseView
         }
         else
         {
-            UpdateCastingString(inputArgs.typedString, inputArgs.castString);
+            UpdateCastingString(inputArgs.level, inputArgs.typedString, inputArgs.castString);
         }
     }
 
@@ -94,30 +96,32 @@ public class SkillHudView : BaseView
 
         if (inputArgs.isTypo)
         {
-            UpdateCastingString(inputArgs.typedString, inputArgs.castString, true);
+            UpdateCastingString(inputArgs.level, inputArgs.typedString, inputArgs.castString, true);
             GetText(Texts.CastResultText).color = Color.red;
 
             UpdateText(Texts.CastResultText, $"영창 오류!!");
-            StartCoroutine(ProcessTypoFx(inputArgs.typedString, inputArgs.castString));
+            StartCoroutine(ProcessTypoFx(inputArgs.typedString, inputArgs.castString, inputArgs.level));
         }
         else
         {
-            UpdateCastingString(inputArgs.typedString, inputArgs.castString);
+            UpdateCastingString(inputArgs.level, inputArgs.typedString, inputArgs.castString);
         }
     }
 
-    private void UpdateCastingString(string typedString, string castString, bool isTypo = false)
+    private void UpdateCastingString(int level, string typedString, string castString, bool isTypo = false)
     {
         if (typedString.Length > castString.Length)
             return;
 
         string remainingText = castString[typedString.Length..];
         string colorCodeText = !isTypo ? "FFFFFF" : "FF0000";
-        string formattedText = $"<color=#{colorCodeText}>{typedString}</color><color=#808080>{remainingText}</color>";
+        string formattedText = $"<color=#404040>{level}소절)</color>" +
+            $"<color=#{colorCodeText}>{typedString}</color>" +
+            $"<color=#808080>{remainingText}</color>";
         UpdateText(Texts.CastingText, formattedText);
     }
 
-    private IEnumerator ProcessTypoFx(string typedString, string castString)
+    private IEnumerator ProcessTypoFx(string typedString, string castString, int level)
     {
         if (_isProcessingTypoFx) yield break;
         _isProcessingTypoFx = true;
@@ -136,9 +140,9 @@ public class SkillHudView : BaseView
             yield return null;
         }
 
-        UpdateCastingString(typedString, castString);
+        UpdateCastingString(level, typedString, castString);
         GetText(Texts.CastResultText).color = Color.white;
-        UpdateText(Texts.CastResultText, $"영창 실행");
+        UpdateText(Texts.CastResultText, $"영창 모드");
     }
 
     private void OnCastingInput(object args)
@@ -147,7 +151,8 @@ public class SkillHudView : BaseView
 
         _isCastingInput = true;
 
-        UpdateCastingString("", inputArgs.castString);
+        UpdateCastingString(inputArgs.level, "", inputArgs.castString);
+        UpdateText(Texts.CastResultText, $"영창 모드");
     }
 
     private void OnCastingEnd(object args)
@@ -157,7 +162,6 @@ public class SkillHudView : BaseView
 
         var endArgs = args as CastingEndEventArgs;
         var skillData = endArgs.skillData;
-        string levelString;
 
         if (endArgs.isSuccess)
         {
@@ -165,19 +169,14 @@ public class SkillHudView : BaseView
             GetText(Texts.CastResultText).color = Color.green;
 
             var levelData = skillData.GetSkillLevelData(endArgs.level);
-            levelString = levelData.DisplayName != string.Empty ? $" | {levelData.DisplayName}" : "";
 
-            UpdateText(Texts.CastingText, skillData.CastResult(endArgs.level));
-            UpdateText(Texts.CastResultText, $"스킬: {skillData.DisplayName}{levelString}");
+            UpdateText(Texts.CastingText, $"{levelData.DisplayName}) {skillData.CastResult(endArgs.level)}");
 
             StartCoroutine(OnUseSkillTextClearProcess());
         }
-        else
-        {
-            //UpdateText(Texts.CastingText, string.Empty);
-            UpdateText(Texts.CastResultText, $"영창 중지");
-            GetText(Texts.CastResultText).color = Color.gray;
-        }
+
+        UpdateText(Texts.CastResultText, $"이동 모드");
+        GetText(Texts.CastResultText).color = _darkGray;
     }
 
     private IEnumerator OnUseSkillTextClearProcess()
@@ -197,9 +196,6 @@ public class SkillHudView : BaseView
         }
 
         GetText(Texts.CastingText).color = Color.white;
-        GetText(Texts.CastResultText).color = Color.white;
-
         UpdateText(Texts.CastingText, string.Empty);
-        UpdateText(Texts.CastResultText, string.Empty);
     }
 }
