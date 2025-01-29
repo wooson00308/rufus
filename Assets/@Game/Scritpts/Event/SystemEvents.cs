@@ -24,20 +24,19 @@ public class SystemEventArgs
 
 public class CastingSystemEventArgs : SystemEventArgs
 {
-
+    public string typedString;
+    public string castString;
 }
 
 public class CastingStartEventArgs: CastingSystemEventArgs
 {
-    public string typedString;
-    public string castingString;
+    
 }
 
 public class CastingInputEventArgs : CastingSystemEventArgs
 {
+    public string keyString;
     public bool isTypo;
-    public string typedString;
-    public string castingString;
 }
 
 public class CastingEndEventArgs: CastingSystemEventArgs

@@ -33,6 +33,25 @@ public class SkillData : Data
         return LevelDatas[index];
     }
 
+    public string CastResult(int maxLevel)
+    {
+        int level = 1;
+        string cast = "";
+        foreach(var levelData in LevelDatas)
+        {
+            cast += levelData.Cast;
+
+            if(++level > maxLevel)
+            {
+                break;
+            }
+
+            cast += " ";
+        }
+
+        return cast;
+    }
+
     [field: SerializeField] public Skill Prefab { get; private set; }
     [field: SerializeField] public List<SkillLevelData> LevelDatas { get; private set; }
 }

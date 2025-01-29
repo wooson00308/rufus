@@ -18,6 +18,7 @@ public class CastingSystem : Singleton<CastingSystem>
     private bool _isTyping = false;
     private string _typedString = "";
     private string _castString = "";
+    private string _latestString = "";
 
     private static readonly CastingEndEventArgs FailEventArgs = new()
     {
@@ -120,16 +121,14 @@ public class CastingSystem : Singleton<CastingSystem>
                         
                         _typedString += inputChar;
 
-                        OnCastingKeyInput(inputChar);
+                        bool isTypo = !_castString.StartsWith(_typedString); // 오타 검사 추가
+
+                        OnCastingKeyInput(inputChar, isTypo);
 
                         if (_castString.Equals(_typedString))
                         {
                             OnValidKeyInput(inputChar, _typedString);
                             break;
-                        }
-                        else
-                        {
-                            _typedString = _typedString[..^1];
                         }
                     }
                 }
@@ -142,9 +141,12 @@ public class CastingSystem : Singleton<CastingSystem>
         _isTyping = true;
         Debug.Log("타이핑 시작!");
 
+        _currentLevelData = _skill.Data.GetSkillLevelData(_castLevel);
+        _castString = _currentLevelData.Cast;
+
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, new CastingStartEventArgs
         {
-            castingString = _castString,
+            castString = _castString,
             typedString = _typedString,
         });
     }
@@ -168,7 +170,7 @@ public class CastingSystem : Singleton<CastingSystem>
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
         {
             typedString = _typedString,
-            castingString = _castString
+            castString = _castString
         });
     }
 
@@ -176,8 +178,9 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         if(!isPause)
         {
-            _castString = string.Empty;
-            _typedString = string.Empty;
+            _typedString = "";
+            _successLevel = 0;
+            _castLevel = 1;
         }
         
         _isTyping = false;
@@ -201,17 +204,22 @@ public class CastingSystem : Singleton<CastingSystem>
             level = _successLevel,
             skillData = _skill.Data,
             isSuccess = true,
-            resultCode = (int)CastingResultCode.Success
+            resultCode = (int)CastingResultCode.Success,
         });
+
         EndTyping(false);
     }
 
     private void OnCastingKeyInput(string key, bool isTypo = false)
     {
+        if(isTypo) _typedString = _typedString[..^1];
+
         GameEventSystem.Instance.Publish((int)SystemEvents.Casting, new CastingInputEventArgs
         {
-            typedString = key,
-            isTypo = isTypo
+            keyString = key,
+            isTypo = isTypo,
+            typedString = _typedString,
+            castString = _castString
         });
     }
 
@@ -219,6 +227,7 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         Debug.Log($"유효 입력 발생: {latestChar}, 현재 입력 문자열: {currentString}");
 
+        _latestString = _typedString;
         _typedString = string.Empty;
         _successLevel++;
 
@@ -230,12 +239,12 @@ public class CastingSystem : Singleton<CastingSystem>
         {
             _currentLevelData = _skill.Data.GetSkillLevelData(++_castLevel);
             _castString = _currentLevelData.Cast;
-        }
 
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
-        {
-            typedString = currentString,
-            castingString = _castString
-        });
+            GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
+            {
+                typedString = currentString,
+                castString = _castString,
+            });
+        }
     }
 }
