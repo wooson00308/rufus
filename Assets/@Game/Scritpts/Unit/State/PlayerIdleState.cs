@@ -1,4 +1,6 @@
+using System.Linq;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerIdleState : StateBase
 {
@@ -28,6 +30,11 @@ public class PlayerIdleState : StateBase
         if (Input.GetKey(KeyCode.Mouse0))
         {
             _fsm.TransitionTo<PlayerAttackState>();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            unit.UseSkill();
         }
     }
 }

@@ -29,17 +29,21 @@ public class CastingSystemEventArgs : SystemEventArgs
 
 public class CastingStartEventArgs: CastingSystemEventArgs
 {
-    
+    public string typedString;
+    public string castingString;
 }
 
 public class CastingInputEventArgs : CastingSystemEventArgs
 {
+    public bool isTypo;
     public string typedString;
+    public string castingString;
 }
 
 public class CastingEndEventArgs: CastingSystemEventArgs
 {
     public SkillData skillData;
-    public bool isSuccess;
+    public int level = 0;
     public int resultCode;
+    public bool isSuccess;
 }

@@ -98,7 +98,7 @@ public class Skill : MonoBehaviour
     /// <summary>
     /// (직접 호출하거나 Condition에 의해 트리거될 때) 스킬 발동
     /// </summary>
-    public void UseSkill()
+    public void UseSkill(int level = 0)
     {
         // 이미 쿨타임 중이면 스킬 사용 불가
         if (_isCoolingDown)
@@ -109,20 +109,24 @@ public class Skill : MonoBehaviour
 
         _isCoolingDown = true;
 
+        var levelData = level > 0 && level <= _data.LevelDatas.Count ?
+            _data.GetSkillLevelData(level) :
+            _currentLevelData;
+
         // 스킬 발동 FX 처리
-        foreach (var fxEventData in _currentLevelData.UseSkillFxDatas)
+        foreach (var fxEventData in levelData.UseSkillFxDatas)
         {
             fxEventData.OnEvent(_owner);
         }
 
         // === 추가: 쿨타임 설정 ===
-        _cooltimeRemain = _currentLevelData.Cooltime;
+        _cooltimeRemain = levelData.Cooltime;
 
         // === 추가: 지속시간 설정(버프 효과가 있는 스킬이라면) ===
-        if (_currentLevelData.Duration > 0f)
+        if (levelData.Duration > 0f)
         {
             _isDurationActive = true;
-            _durationRemain = _currentLevelData.Duration;
+            _durationRemain = levelData.Duration;
         }
         else
         {

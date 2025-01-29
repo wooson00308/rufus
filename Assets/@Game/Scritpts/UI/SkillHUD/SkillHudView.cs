@@ -2,19 +2,20 @@ using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SkillHudView : BaseView
 {
     private enum Texts
     {
         CastingText,
-        CastInputText
+        CastInputText,
+        CastResultText
     }
 
     private bool _isCastingStart;
     private bool _isCastingInput;
-
-    private const string CASTING_TEXT_NULL = "ÁÖ¹®À» ÀÔ·ÂÇÏ¼¼¿ä";
+    private bool _isProcessingTypoFx;
 
     public void Awake()
     {
@@ -47,83 +48,102 @@ public class SkillHudView : BaseView
 
     private void OnCastingStart(object args = null)
     {
+        var startArgs = args as CastingStartEventArgs;
+
         _isCastingStart = true;
 
-        ResetCastingText();
-        UpdateCastingText(Texts.CastInputText, string.Empty);
-    }
-
-    private void ResetCastingText()
-    {
-        _isCastingStart = true;
-        UpdateCastingText(Texts.CastingText, CASTING_TEXT_NULL);
+        UpdateCastingText(Texts.CastingText, startArgs.typedString);
+        UpdateCastingText(Texts.CastInputText, startArgs.castingString);
     }
 
     private void OnCastingRemove(object args)
     {
-        if(!GetText(Texts.CastingText).text.Equals(CASTING_TEXT_NULL))
+        var inputArgs = args as CastingInputEventArgs;
+
+        if(GetText(Texts.CastingText).text != string.Empty)
         {
-            ResetCastingText();
+            UpdateCastingText(Texts.CastingText, string.Empty);
         }
         else
         {
-            var castInputText = GetText(Texts.CastInputText).text;
-            if (castInputText.Length > 0)
-            {
-                var split = castInputText.Split(" + ").ToList();
-                split.RemoveAt(split.Count - 1);
-                ResetCastingText();
-                UpdateCastingText(Texts.CastInputText, string.Join(" + ", split));
-            }
+            UpdateCastingText(Texts.CastInputText, inputArgs.castingString);
         }
     }
 
     private void OnCasting(object args)
     {
+        _isProcessingTypoFx = false;
+        var inputArgs = args as CastingInputEventArgs;
+
         if (_isCastingStart || _isCastingInput)
         {
             _isCastingStart = false;
             _isCastingInput = false;
-            UpdateCastingText(Texts.CastingText, string.Empty);
         }
 
-        var castingInputEventArgs = args as CastingInputEventArgs;
-        UpdateCastingText(Texts.CastingText, GetText(Texts.CastingText).text + castingInputEventArgs.typedString.ToUpper());
+        if (inputArgs.isTypo)
+        {
+            GetText(Texts.CastingText).color = Color.red;
+        }
+        else
+        {
+            UpdateCastingText(Texts.CastingText, GetText(Texts.CastingText).text + inputArgs.typedString.ToUpper());
+        }
+    }
+
+    private IEnumerator ProcessTypoFx()
+    {
+        if (_isProcessingTypoFx) yield break;
+        _isProcessingTypoFx = true;
+
+        float time = 0; 
+        while(time < .2f)
+        {
+            if(!_isProcessingTypoFx)
+            {
+                break;
+            }
+
+            time += GameTime.DeltaTime;
+            yield return null;
+        }
+
+        GetText(Texts.CastingText).color = Color.white;
     }
 
     private void OnCastingInput(object args)
     {
-        var castingInputEventArgs = args as CastingInputEventArgs;
+        var inputArgs = args as CastingInputEventArgs;
 
         _isCastingInput = true;
 
-        var castInputText = GetText(Texts.CastInputText).text;
-        if (!string.IsNullOrEmpty(castInputText))
-        {
-            UpdateCastingText(Texts.CastInputText, castInputText + " + ");
-        }
-
-        ResetCastingText();
-        UpdateCastingText(Texts.CastInputText, GetText(Texts.CastInputText).text + castingInputEventArgs.typedString);
+        UpdateCastingText(Texts.CastingText, string.Empty);
+        UpdateCastingText(Texts.CastInputText, inputArgs.castingString);
     }
 
     private void OnCastingEnd(object args)
     {
-        var endEventArgs = args as CastingEndEventArgs;
+        _isCastingStart = false;
+
+        var endArgs = args as CastingEndEventArgs;
+        var skillData = endArgs.skillData;
+        string levelString;
 
         UpdateCastingText(Texts.CastingText, string.Empty);
+        UpdateCastingText(Texts.CastInputText, string.Empty);
 
-        if (endEventArgs.isSuccess)
+        if (endArgs.isSuccess)
         {
-            UpdateCastingText(Texts.CastInputText, "½ºÅ³: " + endEventArgs.skillData.DisplayName);
+            var levelData = skillData.GetSkillLevelData(endArgs.level);
+            levelString = levelData.DisplayName != string.Empty ? $" | {levelData.DisplayName}" : "";
+            UpdateCastingText(Texts.CastResultText, $"ìŠ¤í‚¬: {skillData.DisplayName}{levelString}");
+
+            StartCoroutine(OnUseSkillTextClearProcess());
         }
         else
         {
-            UpdateCastingText(Texts.CastInputText, "Ä³½ºÆÃ ½ÇÆÐ!");
+            UpdateCastingText(Texts.CastResultText, string.Empty);
         }
-
-        _isCastingStart = false;
-        StartCoroutine(OnUseSkillTextClearProcess());
     }
 
     private IEnumerator OnUseSkillTextClearProcess()
@@ -134,6 +154,7 @@ public class SkillHudView : BaseView
         {
             if (_isCastingStart)
             {
+                _isCastingStart = false;
                 yield break;
             }
 
@@ -143,5 +164,6 @@ public class SkillHudView : BaseView
 
         UpdateCastingText(Texts.CastingText, string.Empty);
         UpdateCastingText(Texts.CastInputText, string.Empty);
+        UpdateCastingText(Texts.CastResultText, string.Empty);
     }
 }

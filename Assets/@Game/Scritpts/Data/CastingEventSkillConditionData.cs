@@ -7,10 +7,16 @@ public class CastingEventSkillConditionData : ConditionData
 
     public override bool IsSatisfied(Skill skill, object gameEvent)
     {
-        if (!base.IsSatisfied(skill, gameEvent)) return false;
-        if (gameEvent is not CastingEndEventArgs args) return false;
-        if (!args.isSuccess) return false;
-        if (skill.Data.Id != args.skillData.Id) return false;
         return true;
+    }
+
+    public override void TryUseSkill(Skill skill, object gameEvent)
+    {
+        if (!base.IsSatisfied(skill, gameEvent)) return;
+        if (gameEvent is not CastingEndEventArgs args) return;
+        if (!args.isSuccess) return;
+        if (skill.Data.Id != args.skillData.Id) return;
+
+        skill.UseSkill(args.level);
     }
 }

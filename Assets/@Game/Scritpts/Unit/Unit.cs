@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,6 +22,7 @@ public class Unit : MonoBehaviour, IStatSettable
     private Inventory _inventory;
     private TargetDetector _detector;
     private readonly Dictionary<int, Skill> _skillDic = new();
+    public Dictionary<int, Skill> SkillDic => _skillDic;
     [SerializeField] private Transform _skillStorage;
     private Unit _lastAttacker;
     private Unit _killer;
@@ -313,6 +315,27 @@ public class Unit : MonoBehaviour, IStatSettable
                 publisher = this
             });
         }
+    }
+
+    public void UseSkill(int id = 0)
+    {
+        SkillData data;
+
+        if(id == 0)
+        {
+            var skills = _skillDic.Values.ToList();
+            data = skills[0].Data;
+        }
+        else
+        {
+            data = _skillDic[id].Data;
+        }
+
+        GameEventSystem.Instance.Publish((int)SkillEvents.UseSkill, new SkillEventArgs
+        {
+            publisher = this,
+            data = data
+        });
     }
 
     public Skill GetSkill(int id)

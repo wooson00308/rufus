@@ -9,13 +9,16 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private Unit _player;
     private Skill _skill;
-    private SkillLevelData _levelData;
+    private SkillLevelData _currentLevelData;
+
+    private int _successLevel;
+    private int _castLevel;
+    private bool _isCasting;
 
     private bool _isTyping = false;
     private string _typedString = "";
     private string _castString = "";
 
-    private static readonly CastingStartEventArgs StartEventArgs = new();
     private static readonly CastingEndEventArgs FailEventArgs = new()
     {
         isSuccess = false,
@@ -27,6 +30,11 @@ public class CastingSystem : Singleton<CastingSystem>
         resultCode = (int)CastingResultCode.Error_CancelTyping
     };
 
+    protected override void Awake()
+    {
+        base.Awake();
+        Initialize();
+    }
 
     protected override void Initialize()
     {
@@ -40,34 +48,38 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private void OnUseSkill(object gameEvent)
     {
+        if (_isCasting) return;
+        _isCasting = true;
+
         var args = gameEvent as SkillEventArgs;
 
+        _successLevel = 0;
+        _castLevel = 1;
         _player = args.publisher;
         _skill = _player.GetSkill(args.data.Id);
-        _levelData = _skill.CurrentLevelData;
+        _currentLevelData = _skill.Data.GetSkillLevelData(_castLevel);
+        _castString = _currentLevelData.Cast;
     }
 
     public void Update()
     {
-        if (!_isTyping)
+        if (!_isCasting) return;
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            _isTyping = !_isTyping;
+
+            if (_isTyping)
             {
-                _isTyping = !_isTyping;
-
-                if(_isTyping)
-                {
-                    StartCasting();
-                }
-                else
-                {
-                    PauseCasting(CancelEventArgs);
-                }
-
                 StartCasting();
             }
+            else
+            {
+                EndCasting(CancelEventArgs);
+            }
         }
-        else
+
+        if (_isTyping)
         {
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
@@ -75,27 +87,49 @@ public class CastingSystem : Singleton<CastingSystem>
                 {
                     if (keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter)
                     {
-
+                        if(_successLevel == 0)
+                        {
+                            EndCasting(CancelEventArgs);
+                        }
+                        else
+                        {
+                            SuccessCasting();
+                        }
                     }
                     else if (keyCode == KeyCode.Backspace)
                     {
                         RemoveTyping();
                     }
-                    else if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z)
+                    // A ~ Z || 스페이스바 || . || ,
+                    else if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z || keyCode == KeyCode.Space || keyCode == KeyCode.Comma || keyCode == KeyCode.Period)
                     {
                         string inputChar = keyCode.ToString();
+
+                        if (keyCode == KeyCode.Space)
+                        {
+                            inputChar = " ";
+                        }
+                        if (keyCode == KeyCode.Comma)
+                        {
+                            inputChar = ",";
+                        }
+                        if (keyCode == KeyCode.Period)
+                        {
+                            inputChar = ".";
+                        }
+                        
                         _typedString += inputChar;
 
                         OnCastingKeyInput(inputChar);
 
-                        foreach (var cast in Enum.GetValues(typeof(Cast)))
+                        if (_castString.Equals(_typedString))
                         {
-                            if (cast.ToString().Equals(_typedString))
-                            {
-                                OnValidKeyInput(inputChar, _typedString);
-                                _typedString = string.Empty;
-                                break;
-                            }
+                            OnValidKeyInput(inputChar, _typedString);
+                            break;
+                        }
+                        else
+                        {
+                            _typedString = _typedString[..^1];
                         }
                     }
                 }
@@ -108,7 +142,11 @@ public class CastingSystem : Singleton<CastingSystem>
         _isTyping = true;
         Debug.Log("타이핑 시작!");
 
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, StartEventArgs);
+        GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, new CastingStartEventArgs
+        {
+            castingString = _castString,
+            typedString = _typedString,
+        });
     }
 
     private void RemoveTyping()
@@ -116,45 +154,64 @@ public class CastingSystem : Singleton<CastingSystem>
         if (_typedString.Length > 0)
         {
             _typedString = "";
-            _castString = "";
+        }
+        else
+        {
+            if (_castLevel > 1)
+            {
+                _successLevel--;
+                _currentLevelData = _skill.Data.GetSkillLevelData(--_castLevel);
+                _castString = _currentLevelData.Cast;
+            }
         }
 
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove);
+        GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
+        {
+            typedString = _typedString,
+            castingString = _castString
+        });
     }
 
-    private void EndTyping(bool isClearTypedString = true)
+    private void EndTyping(bool isPause)
     {
-        if(isClearTypedString) _typedString = "";
+        if(!isPause)
+        {
+            _castString = string.Empty;
+            _typedString = string.Empty;
+        }
+        
         _isTyping = false;
 
-        Debug.Log("타이핑 종료!");
+        Debug.Log("타이핑 정지!");
     }
 
-    private void PauseCasting(CastingEndEventArgs args)
+    private void EndCasting(CastingEndEventArgs args)
     {
-        Debug.Log("타이핑 일시정지!");
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, args);
-        EndTyping(false);
+        var isPause = args.Equals(CancelEventArgs);
+        EndTyping(isPause);
     }
 
-    private void SuccessCasting(SkillData data)
+    private void SuccessCasting()
     {
         Debug.Log("캐스팅 성공! 성공 처리");
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, new CastingEndEventArgs
         {
-            skillData = data,
+            level = _successLevel,
+            skillData = _skill.Data,
             isSuccess = true,
             resultCode = (int)CastingResultCode.Success
         });
-        EndTyping();
+        EndTyping(false);
     }
 
-    private void OnCastingKeyInput(string key)
+    private void OnCastingKeyInput(string key, bool isTypo = false)
     {
         GameEventSystem.Instance.Publish((int)SystemEvents.Casting, new CastingInputEventArgs
         {
-            typedString = key
+            typedString = key,
+            isTypo = isTypo
         });
     }
 
@@ -162,9 +219,23 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         Debug.Log($"유효 입력 발생: {latestChar}, 현재 입력 문자열: {currentString}");
 
+        _typedString = string.Empty;
+        _successLevel++;
+
+        if (_castLevel >= _skill.Level)
+        {
+            SuccessCasting();
+        }
+        else
+        {
+            _currentLevelData = _skill.Data.GetSkillLevelData(++_castLevel);
+            _castString = _currentLevelData.Cast;
+        }
+
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
         {
-            typedString = currentString
+            typedString = currentString,
+            castingString = _castString
         });
     }
 }

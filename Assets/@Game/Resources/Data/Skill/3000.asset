@@ -10,21 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a5ac3946bac5a5469440fdb1e1a17f4, type: 3}
-  m_Name: MultiFireballSkillData
+  m_Name: 3000
   m_EditorClassIdentifier: 
-  <Id>k__BackingField: 3001
+  <Id>k__BackingField: 3000
   <Name>k__BackingField: 
-  <DisplayName>k__BackingField: "\uB2E4\uC911 \uD654\uC5FC\uAD6C"
+  <DisplayName>k__BackingField: "\uD654\uC5FC\uAD6C"
   <Description>k__BackingField: 
-  <Casts>k__BackingField: 0000000000000000
   <Prefab>k__BackingField: {fileID: 2012760596107155170, guid: deacf1b5f3d142942ba7fc1bf50cd369, type: 3}
   <LevelDatas>k__BackingField:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
     <OverloadGage>k__BackingField: 0
+    <DisplayName>k__BackingField: 
     <Description>k__BackingField: 
-    <Duration>k__BackingField: 1
+    <Duration>k__BackingField: 0
     <Cooltime>k__BackingField: 0
+    <Cast>k__BackingField: IGNIS
+    <Conditions>k__BackingField:
+    - {fileID: 11400000, guid: 0931b18517f667b41b8d4faf2cfacd67, type: 2}
+    <ApplyFxDatas>k__BackingField: []
+    <UseSkillFxDatas>k__BackingField:
+    - {fileID: 11400000, guid: a4ca3bca45accfe468380214d1696369, type: 2}
+    <RemoveFxDatas>k__BackingField: []
+  - <ADRatio>k__BackingField: 0
+    <APRatio>k__BackingField: 0
+    <OverloadGage>k__BackingField: 0
+    <DisplayName>k__BackingField: "\uBA40\uD2F0\uC0F7"
+    <Description>k__BackingField: 
+    <Duration>k__BackingField: 0
+    <Cooltime>k__BackingField: 0
+    <Cast>k__BackingField: ARDENTIS ORBES
     <Conditions>k__BackingField:
     - {fileID: 11400000, guid: 0931b18517f667b41b8d4faf2cfacd67, type: 2}
     <ApplyFxDatas>k__BackingField: []

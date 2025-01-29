@@ -4,10 +4,10 @@ using UnityEngine;
 public class UnitEventSkillConditionData : SkillConditionData
 {
     public UnitEvents UnitEvent;
-    public override int EventId { get { return (int)UnitEvent; } }
+    public override int EventId => (int)UnitEvent;
 
     /// <summary>
-    /// À¯´ÖÀÌ Á×´Â ÀÌº¥Æ®¸¦ °¨ÁöÇØ, ¾îÅÂÄ¿°¡ º»ÀÎÀÌ¸é ½ÇÇà 
+    /// ìœ ë‹›ì´ íŠ¹ì • ì´ë²¤íŠ¸ë¥¼ ë§Œì¡±í•  ë•Œ, ìŠ¤í‚¬ì˜ ì¡°ê±´ì´ ì¶©ì¡±ë˜ëŠ”ì§€ í™•ì¸
     /// </summary>
     /// <param name="skill"></param>
     /// <param name="gameEvent"></param>
