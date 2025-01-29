@@ -1,10 +1,7 @@
 using System.Collections;
-using System.Linq;
 using TMPro;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.Rendering.GPUSort;
+
 
 public class SkillHudView : BaseView
 {
