@@ -8,15 +8,15 @@ public class LobbyProcess : Process
     public CinemachineCamera _camera;
     public List<SpawnConfig> _spawnConfig;
 
+    public List<SkillData> _skillDatas;
+
     public void OnEnable()
     {
         var player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
         _camera.Follow = player.transform;
         player.Inventory.Equip(_spawnConfig[0].item);
 
-        var skillDatas = CastingSystem.Instance.SkillDatas;
-
-        foreach (var data in skillDatas)
+        foreach (var data in _skillDatas)
         {
             player.ApplySkill(data);
         }

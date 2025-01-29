@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// À¯´ÖÀÌ º¸À¯ÇÏ°í ÀÖ´Â ½ºÅ³ Á¤º¸
+/// ìŠ¤í‚¬ì„ ê´€ë¦¬í•˜ê³  ìˆëŠ” ìŠ¤í‚¬ í´ë˜ìŠ¤
 /// </summary>
 public class Skill : MonoBehaviour
 {
@@ -15,11 +15,11 @@ public class Skill : MonoBehaviour
     private int _level = 1;
     private bool _isInitialized;
 
-    // === Ãß°¡: ÄğÅ¸ÀÓ / µà·¹ÀÌ¼Ç °ü·Ã ÇÊµå ===
+    // === ì¶”ê°€: ì¿¨íƒ€ì„ / ì§€ì†ì‹œê°„ ê´€ë ¨ í•„ë“œ ===
     private bool _isCoolingDown;
-    private float _cooltimeRemain;    // ³²Àº ÄğÅ¸ÀÓ
+    private float _cooltimeRemain;    // í˜„ì¬ ì¿¨íƒ€ì„
     private bool _isDurationActive;
-    private float _durationRemain;    // ³²Àº Áö¼Ó½Ã°£
+    private float _durationRemain;    // í˜„ì¬ ì§€ì†ì‹œê°„
 
     public Unit Owner => _owner;
     public SkillData Data => _data;
@@ -28,7 +28,7 @@ public class Skill : MonoBehaviour
     public int Level => _level;
 
     /// <summary>
-    /// ½ºÅ³ ÃÊ±âÈ­
+    /// ìŠ¤í‚¬ ì´ˆê¸°í™”
     /// </summary>
     public void Initialized(Unit owner, SkillData data)
     {
@@ -40,7 +40,7 @@ public class Skill : MonoBehaviour
 
         SubscribeConditionEvents();
 
-        // ½ºÅ³ÀÌ È°¼ºÈ­µÉ ¶§ Àû¿ëµÇ´Â ÀÌÆåÆ® (¹öÇÁ µî)
+        // ìŠ¤í‚¬ì´ í™œì„±í™”ë  ë•Œ ë°œìƒí•˜ëŠ” ì´ë²¤íŠ¸ (ë²„í”„ ë“±)
         foreach (var fxEventData in _currentLevelData.ApplyFxDatas)
         {
             fxEventData.OnSkillEvent(_owner, this);
@@ -50,11 +50,11 @@ public class Skill : MonoBehaviour
     }
 
     /// <summary>
-    /// OnDisable µÉ ¶§ (¿ÀºêÁ§Æ®°¡ ºñÈ°¼ºÈ­µÉ ¶§) Ã³¸®
+    /// OnDisable ì‹œ í˜¸ì¶œ (ì˜¤ë¸Œì íŠ¸ê°€ ë¹„í™œì„±í™”ë  ë•Œ) ì²˜ë¦¬
     /// </summary>
     public void OnDisable()
     {
-        // ½ºÅ³ÀÌ ºñÈ°¼ºÈ­µÉ ¶§ Á¦°ÅÇØ¾ß ÇÒ ÀÌÆåÆ®°¡ ÀÖ´Ù¸é ¿©±â¼­ Ã³¸®
+        // ìŠ¤í‚¬ì´ ë¹„í™œì„±í™”ë  ë•Œ ì •ë¦¬í•´ì•¼ í•  ì´ë²¤íŠ¸ê°€ ìˆë‹¤ë©´ ì—¬ê¸°ì„œ ì²˜ë¦¬
         foreach (var fxEventData in _currentLevelData.RemoveFxDatas)
         {
             fxEventData.OnSkillEvent(_owner, this);
@@ -78,7 +78,7 @@ public class Skill : MonoBehaviour
 
         Action<object> OnEvent(ConditionData condition)
         {
-            // ¹Ì¸® delegate(¶÷´Ù) »ı¼º ÈÄ ÀúÀå
+            // ì´ë²¤íŠ¸ delegate(ë¸ë¦¬ê²Œì´íŠ¸) ë°˜í™˜
             return (gameEvent) => { condition.TryUseSkill(this, gameEvent); };
         }
     }
@@ -96,29 +96,29 @@ public class Skill : MonoBehaviour
     }
 
     /// <summary>
-    /// (Á÷Á¢ È£ÃâÇÏ°Å³ª ConditionÀÌ ¸¸Á·ÇßÀ» ¶§) ½ºÅ³ »ç¿ë
+    /// (ì§ì ‘ í˜¸ì¶œí•˜ê±°ë‚˜ Conditionì— ì˜í•´ íŠ¸ë¦¬ê±°ë  ë•Œ) ìŠ¤í‚¬ ë°œë™
     /// </summary>
     public void UseSkill()
     {
-        // ÀÌ¹Ì ÄğÅ¸ÀÓ ÁßÀÌ¸é ½ºÅ³ »ç¿ë ºÒ°¡
+        // ì´ë¯¸ ì¿¨íƒ€ì„ ì¤‘ì´ë©´ ìŠ¤í‚¬ ì‚¬ìš© ë¶ˆê°€
         if (_isCoolingDown)
         {
-            Debug.Log($"[{name}] ½ºÅ³ÀÌ ÄğÅ¸ÀÓÀÔ´Ï´Ù. ³²Àº ÄğÅ¸ÀÓ: {_cooltimeRemain:F2}s");
+            Debug.Log($"[{name}] ìŠ¤í‚¬ì´ ì¿¨íƒ€ì„ì…ë‹ˆë‹¤. ë‚¨ì€ ì¿¨íƒ€ì„: {_cooltimeRemain:F2}s");
             return;
         }
 
         _isCoolingDown = true;
 
-        // ½ºÅ³ »ç¿ë FX Ã³¸®
+        // ìŠ¤í‚¬ ë°œë™ FX ì²˜ë¦¬
         foreach (var fxEventData in _currentLevelData.UseSkillFxDatas)
         {
             fxEventData.OnEvent(_owner);
         }
 
-        // === Ãß°¡: ÄğÅ¸ÀÓ ¼³Á¤ ===
+        // === ì¶”ê°€: ì¿¨íƒ€ì„ ì„¤ì • ===
         _cooltimeRemain = _currentLevelData.Cooltime;
 
-        // === Ãß°¡: µà·¹ÀÌ¼Ç ¼³Á¤(Áö¼ÓÈ¿°ú°¡ ÀÖ´Â ½ºÅ³ÀÌ¶ó¸é) ===
+        // === ì¶”ê°€: ì§€ì†ì‹œê°„ ì„¤ì •(ë²„í”„ íš¨ê³¼ê°€ ìˆëŠ” ìŠ¤í‚¬ì´ë¼ë©´) ===
         if (_currentLevelData.Duration > 0f)
         {
             _isDurationActive = true;
@@ -129,11 +129,11 @@ public class Skill : MonoBehaviour
             _isDurationActive = false;
         }
 
-        Debug.Log($"[{name}] ½ºÅ³ »ç¿ë! (ÄğÅ¸ÀÓ {_cooltimeRemain:F2}s, Áö¼Ó½Ã°£ {_durationRemain:F2}s)");
+        Debug.Log($"[{name}] ìŠ¤í‚¬ ë°œë™! (ì¿¨íƒ€ì„ {_cooltimeRemain:F2}s, ì§€ì†ì‹œê°„ {_durationRemain:F2}s)");
     }
 
     /// <summary>
-    /// ½ºÅ³ ·¹º§ ¾÷
+    /// ìŠ¤í‚¬ ë ˆë²¨ ì—…
     /// </summary>
     public void LevelUp(int amount = 1)
     {
@@ -151,10 +151,10 @@ public class Skill : MonoBehaviour
         SubscribeConditionEvents();
     }
 
-    // === Ãß°¡: ÄğÅ¸ÀÓ / µà·¹ÀÌ¼Ç °»½Å ·ÎÁ÷ ===
+    // === ì¶”ê°€: ì¿¨íƒ€ì„ / ì§€ì†ì‹œê°„ ê´€ë ¨ ê°±ì‹  ===
     public void Update()
     {
-        // 1) ÄğÅ¸ÀÓÀÌ µ¹°í ÀÖ´Ù¸é
+        // 1) ì¿¨íƒ€ì„ì´ ì§„í–‰ ì¤‘ì´ë¼ë©´
         if (_isCoolingDown)
         {
             _cooltimeRemain -= Time.deltaTime;
@@ -162,11 +162,11 @@ public class Skill : MonoBehaviour
             {
                 _cooltimeRemain = 0f;
                 _isCoolingDown = false;
-                Debug.Log($"[{name}] ½ºÅ³ ÄğÅ¸ÀÓÀÌ Á¾·áµÇ¾ú½À´Ï´Ù.");
+                Debug.Log($"[{name}] ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
             }
         }
 
-        // 2) Áö¼Ó È¿°ú°¡ È°¼ºÈ­µÇ¾î ÀÖ´Ù¸é
+        // 2) ì§€ì† íš¨ê³¼ê°€ í™œì„±í™”ë˜ì–´ ìˆë‹¤ë©´
         if (_isDurationActive)
         {
             _durationRemain -= Time.deltaTime;
@@ -175,11 +175,10 @@ public class Skill : MonoBehaviour
                 _durationRemain = 0f;
                 _isDurationActive = false;
 
-                // ÀÌ°÷¿¡¼­ Áö¼Ó È¿°ú°¡ ³¡³µÀ» ¶§ÀÇ ÀÌÆåÆ®³ª Ã³¸® È£Ãâ
-                Debug.Log($"[{name}] ½ºÅ³ È¿°ú(µà·¹ÀÌ¼Ç)°¡ Á¾·áµÇ¾ú½À´Ï´Ù.");
+                // ì—¬ê¸°ì— ì§€ì† íš¨ê³¼ ì¢…ë£Œ ì‹œ ì²˜ë¦¬í•  ì´ë²¤íŠ¸ ì‹¤í–‰
+                Debug.Log($"[{name}] ìŠ¤í‚¬ íš¨ê³¼(ì§€ì†ì‹œê°„)ê°€ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 
-                // RemoveFxDatas °°Àº °É ¿©±â¼­ È£ÃâÇÒ ¼öµµ ÀÖÀ½
-                // (¸¸¾à "½ºÅ³ È¿°ú°¡ ³¡³ª´Â ½ÃÁ¡"¿¡¸¸ ¹ßµ¿ÇÏ´Â ·ÎÁ÷ÀÌ ÇÊ¿äÇÏ´Ù¸é)
+                // RemoveFxDatas ê´€ë ¨ ì´ë²¤íŠ¸ ì—¬ê¸°ì„œ ì‹¤í–‰ (ë²„í”„ íš¨ê³¼ ì¢…ë£Œ ì²˜ë¦¬ ë“±)
                 foreach (var fxEventData in _currentLevelData.UseSkillFxDatas)
                 {
                     fxEventData.OnEndEvent(_owner, this);

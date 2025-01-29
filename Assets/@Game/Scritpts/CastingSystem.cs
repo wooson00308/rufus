@@ -3,20 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
 public class CastingSystem : Singleton<CastingSystem>
 {
     [SerializeField] private Database _database;
 
-    private List<SkillData> _skillDatas;
-    public List<SkillData> SkillDatas => _skillDatas;
+    private Unit _player;
+    private Skill _skill;
+    private SkillLevelData _levelData;
 
-    private List<Cast> _castList = new();
-
-    private Dictionary<List<Cast>, SkillData> _castToSkillMap;
-
-    private bool _isTyping = false;   
+    private bool _isTyping = false;
     private string _typedString = "";
+    private string _castString = "";
 
     private static readonly CastingStartEventArgs StartEventArgs = new();
     private static readonly CastingEndEventArgs FailEventArgs = new()
@@ -24,20 +21,50 @@ public class CastingSystem : Singleton<CastingSystem>
         isSuccess = false,
         resultCode = (int)CastingResultCode.Error_FailedTyping
     };
+    private static readonly CastingEndEventArgs CancelEventArgs = new()
+    {
+        isSuccess = false,
+        resultCode = (int)CastingResultCode.Error_CancelTyping
+    };
+
 
     protected override void Initialize()
     {
-        _skillDatas = _database.GetDatas<SkillData>();
-        _castToSkillMap = _skillDatas.ToDictionary(skill => skill.Casts);
+        GameEventSystem.Instance.Subscribe((int)SkillEvents.UseSkill, OnUseSkill);
+    }
+
+    public void OnDisable()
+    {
+        GameEventSystem.Instance.Unsubscribe((int)SkillEvents.UseSkill, OnUseSkill);
+    }
+
+    private void OnUseSkill(object gameEvent)
+    {
+        var args = gameEvent as SkillEventArgs;
+
+        _player = args.publisher;
+        _skill = _player.GetSkill(args.data.Id);
+        _levelData = _skill.CurrentLevelData;
     }
 
     public void Update()
     {
         if (!_isTyping)
         {
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                StartTyping();
+                _isTyping = !_isTyping;
+
+                if(_isTyping)
+                {
+                    StartCasting();
+                }
+                else
+                {
+                    PauseCasting(CancelEventArgs);
+                }
+
+                StartCasting();
             }
         }
         else
@@ -48,24 +75,7 @@ public class CastingSystem : Singleton<CastingSystem>
                 {
                     if (keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter)
                     {
-                        SkillData data = null;
-                        foreach (var skillData in _skillDatas)
-                        {
-                            if (_castList.SequenceEqual(skillData.Casts))
-                            {
-                                data = skillData;
-                                break;
-                            }
-                        }
 
-                        if (data == null)
-                        {
-                            OnFailTyping();
-                        }
-                        else
-                        {
-                            OnSuccessTyping(data);
-                        }
                     }
                     else if (keyCode == KeyCode.Backspace)
                     {
@@ -83,7 +93,6 @@ public class CastingSystem : Singleton<CastingSystem>
                             if (cast.ToString().Equals(_typedString))
                             {
                                 OnValidKeyInput(inputChar, _typedString);
-                                _castList.Add((Cast)cast);
                                 _typedString = string.Empty;
                                 break;
                             }
@@ -94,48 +103,43 @@ public class CastingSystem : Singleton<CastingSystem>
         }
     }
 
-    private void StartTyping()
+    private void StartCasting()
     {
         _isTyping = true;
-        _typedString = "";
-        Debug.Log("≈∏¿Ã«Œ Ω√¿€!");
-
-        _castList.Clear();
+        Debug.Log("ÌÉÄÏù¥Ìïë ÏãúÏûë!");
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, StartEventArgs);
     }
 
     private void RemoveTyping()
     {
-        if(_typedString.Length > 0)
+        if (_typedString.Length > 0)
         {
             _typedString = "";
+            _castString = "";
         }
-        else if(_castList.Count > 0)
-        {
-            _castList.RemoveAt(_castList.Count - 1);
-        }
-        
+
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove);
     }
 
-    private void EndTyping()
+    private void EndTyping(bool isClearTypedString = true)
     {
+        if(isClearTypedString) _typedString = "";
         _isTyping = false;
-        _typedString = "";
-        Debug.Log("≈∏¿Ã«Œ ¡æ∑·!");
+
+        Debug.Log("ÌÉÄÏù¥Ìïë Ï¢ÖÎ£å!");
     }
 
-    private void OnFailTyping()
+    private void PauseCasting(CastingEndEventArgs args)
     {
-        Debug.Log("ø¿≈∏ πﬂª˝! Ω«∆– √≥∏Æ");
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, FailEventArgs);
-        EndTyping();
+        Debug.Log("ÌÉÄÏù¥Ìïë ÏùºÏãúÏ†ïÏßÄ!");
+        GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, args);
+        EndTyping(false);
     }
 
-    private void OnSuccessTyping(SkillData data)
+    private void SuccessCasting(SkillData data)
     {
-        Debug.Log("¡§¥‰ º∫∞¯! º∫∞¯ √≥∏Æ");
+        Debug.Log("Ï∫êÏä§ÌåÖ ÏÑ±Í≥µ! ÏÑ±Í≥µ Ï≤òÎ¶¨");
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, new CastingEndEventArgs
         {
@@ -156,7 +160,7 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private void OnValidKeyInput(string latestChar, string currentString)
     {
-        Debug.Log($"¿Ø»ø ¿‘∑¬ πﬂª˝: {latestChar}, «ˆ¿Á ¿‘∑¬ ¥©¿˚: {currentString}");
+        Debug.Log($"Ïú†Ìö® ÏûÖÎ†• Î∞úÏÉù: {latestChar}, ÌòÑÏû¨ ÏûÖÎ†• Î¨∏ÏûêÏó¥: {currentString}");
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
         {

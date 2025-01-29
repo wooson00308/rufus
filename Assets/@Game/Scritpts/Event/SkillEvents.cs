@@ -9,5 +9,5 @@ public enum SkillEvents
 
 public class SkillEventArgs: UnitEventArgs
 {
-    public int skillId;
+    public SkillData data;
 }

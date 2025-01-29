@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent (typeof(Status))]
-[RequireComponent (typeof(FSM))]
+[RequireComponent(typeof(Status))]
+[RequireComponent(typeof(FSM))]
 public class Unit : MonoBehaviour, IStatSettable
 {
     public const int MOVE_SPEED_FACTOR = 100;
@@ -81,16 +81,16 @@ public class Unit : MonoBehaviour, IStatSettable
         }
         else
         {
-            if(castingArgs.resultCode == (int)CastingResultCode.Error_CancelTyping)
+            if (castingArgs.resultCode == (int)CastingResultCode.Error_CancelTyping)
             {
 
             }
-            else if(castingArgs.resultCode == (int)CastingResultCode.Error_FailedTyping)
+            else if (castingArgs.resultCode == (int)CastingResultCode.Error_FailedTyping)
             {
 
             }
         }
- 
+
         _fsm.TransitionTo<PlayerIdleState>();
     }
 
@@ -98,7 +98,7 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         _isActive = true;
 
-        Id = data.Id; 
+        Id = data.Id;
         Name = data.Name;
         Team = team;
 
@@ -200,7 +200,7 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         if (Status.IsDeath) return;
 
-        if(!_isRevive)
+        if (!_isRevive)
         {
             _status.OnDeath(attacker);
 
@@ -213,7 +213,7 @@ public class Unit : MonoBehaviour, IStatSettable
     #endregion
 
     #region Animator
-    public void CrossFade(string key,  float fadeTime = 0)
+    public void CrossFade(string key, float fadeTime = 0)
     {
         _model.CrossFade(key, fadeTime);
     }
@@ -236,7 +236,7 @@ public class Unit : MonoBehaviour, IStatSettable
     #region Movement
 
     /// <summary>
-    /// ≈∏∞Ÿ πÊ«‚¿∏∑Œ ¿Ãµø
+    /// ÌÉÄÍ≤ü Î∞©Ìñ•ÏúºÎ°ú Ïù¥Îèô
     /// </summary>
     /// <param name="target"></param>
     public void MoveFromTarget(Transform target)
@@ -260,7 +260,7 @@ public class Unit : MonoBehaviour, IStatSettable
     }
 
     /// <summary>
-    /// ¿Ãµø ¿œΩ√¡ﬂ¡ˆ
+    /// Ïù¥Îèô Ï§ëÏßÄ
     /// </summary>
     public void Stop()
     {
@@ -269,7 +269,7 @@ public class Unit : MonoBehaviour, IStatSettable
     }
 
     /// <summary>
-    /// ≈∏∞Ÿ √ ±‚»≠
+    /// ÌÉÄÍ≤ü Ï¥àÍ∏∞Ìôî
     /// </summary>
     public void ResetMovePath()
     {
@@ -277,7 +277,7 @@ public class Unit : MonoBehaviour, IStatSettable
     }
 
     /// <summary>
-    /// «ÿ¥Á πÊ«‚¿∏∑Œ »∏¿¸
+    /// Ìï¥Îãπ Î∞©Ìñ•ÏúºÎ°ú ÌöåÏ†Ñ
     /// </summary>
     /// <param name="rotDir"></param>
     public void Rotation(Vector3 rotDir)
@@ -309,9 +309,15 @@ public class Unit : MonoBehaviour, IStatSettable
 
             GameEventSystem.Instance.Publish((int)SkillEvents.ApplySkill, new SkillEventArgs
             {
-                skillId = skillData.Id,
+                data = skillData,
                 publisher = this
             });
         }
+    }
+
+    public Skill GetSkill(int id)
+    {
+        if (_skillDic.TryGetValue(id, out var skill)) return skill;
+        return null;
     }
 }

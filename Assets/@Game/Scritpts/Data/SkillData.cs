@@ -5,8 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillData", menuName = "Scriptable Objects/SkillData")]
 public class SkillData : Data
 {
-    [field:SerializeField]public List<Cast> Casts { get; private set; }
-
     public int MaxLevel
     {
         get
@@ -20,7 +18,7 @@ public class SkillData : Data
     {
         if (LevelDatas == null || LevelDatas.Count == 0)
         {
-            Debug.LogError($"{Id}ÀÇ ·¹º§ º° ½ºÅ³ µ¥ÀÌÅÍ°¡ ºñ¾îÀÖ½À´Ï´Ù.");
+            Debug.LogError($"{Id}ì˜ í•´ë‹¹ ë ˆë²¨ ìŠ¤í‚¬ ë°ì´í„°ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return null;
         }
 
@@ -48,6 +46,7 @@ public class SkillLevelData
     [field: SerializeField] public string Description { get; private set; }
     [field: SerializeField] public float Duration { get; private set; }
     [field: SerializeField] public float Cooltime { get; private set; }
+    [field: SerializeField] public string Cast { get; private set; }
 
     [field: SerializeField] public List<ConditionData> Conditions { get; private set; }
     [field: SerializeField] public List<SkillFxEventData> ApplyFxDatas { get; private set; }
