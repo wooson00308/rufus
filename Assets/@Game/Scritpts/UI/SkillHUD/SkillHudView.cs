@@ -134,7 +134,11 @@ public class SkillHudView : BaseView
                 break;
             }
 
-            if (!_isCasting) yield break;
+            if (!_isCasting)
+            {
+                UpdateCastingString(level, typedString, castString);
+                yield break;
+            }
 
             time += GameTime.DeltaTime;
             yield return null;

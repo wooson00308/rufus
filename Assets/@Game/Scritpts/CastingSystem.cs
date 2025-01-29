@@ -119,7 +119,7 @@ public class CastingSystem : Singleton<CastingSystem>
                         
                         _typedString += inputChar;
 
-                        bool isTypo = !_castString.StartsWith(_typedString); // 오타 검사 추가
+                        bool isTypo = _typedString.Length > 0 && _typedString != _castString[.._typedString.Length];
 
                         OnCastingKeyInput(inputChar, isTypo);
 
