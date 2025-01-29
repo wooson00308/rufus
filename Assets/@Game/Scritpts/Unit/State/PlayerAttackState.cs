@@ -23,6 +23,11 @@ public class PlayerAttackState : StateBase
 
     public override void OnUpdate(Unit unit)
     {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            unit.UseSkill();
+        }
+
         if (_currentAttackStateCheckDelay <= 0.5f)
         {
             _currentAttackStateCheckDelay += Time.deltaTime;

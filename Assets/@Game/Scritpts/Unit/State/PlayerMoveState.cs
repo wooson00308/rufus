@@ -17,6 +17,11 @@ public class PlayerMoveState : StateBase
 
     public override void OnUpdate(Unit unit)
     {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            unit.UseSkill();
+        }
+
         var moveVectorX = Input.GetAxisRaw("Horizontal");
         var moveVectorY = Input.GetAxisRaw("Vertical");
 
