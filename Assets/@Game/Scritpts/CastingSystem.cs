@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class CastingSystem : Singleton<CastingSystem>
 {
-    [SerializeField] private Database _database;
-
     private Unit _player;
     private Skill _skill;
     private SkillLevelData _currentLevelData;
@@ -16,13 +14,7 @@ public class CastingSystem : Singleton<CastingSystem>
     private bool _isTyping = false;
     private string _typedString = "";
     private string _castString = "";
-    private string _latestString = "";
 
-    private static readonly CastingEndEventArgs FailEventArgs = new()
-    {
-        isSuccess = false,
-        resultCode = (int)CastingResultCode.Error_FailedTyping
-    };
     private static readonly CastingEndEventArgs CancelEventArgs = new()
     {
         isSuccess = false,
@@ -92,12 +84,7 @@ public class CastingSystem : Singleton<CastingSystem>
             {
                 if (Input.GetKeyDown(keyCode))
                 {
-                    if (keyCode == KeyCode.Backspace)
-                    {
-                        RemoveTyping();
-                    }
-                    // A ~ Z || 스페이스바 || . || ,
-                    else if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z || keyCode == KeyCode.Space || keyCode == KeyCode.Comma || keyCode == KeyCode.Period)
+                    if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z || keyCode == KeyCode.Space || keyCode == KeyCode.Comma || keyCode == KeyCode.Period)
                     {
                         string inputChar = keyCode.ToString();
 
@@ -143,33 +130,10 @@ public class CastingSystem : Singleton<CastingSystem>
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, new CastingStartEventArgs
         {
+            skillData = _skill.Data,
+            level = _castLevel,
             castString = _castString,
             typedString = _typedString,
-            level = _castLevel
-        });
-    }
-
-    private void RemoveTyping()
-    {
-        if (_typedString.Length > 0)
-        {
-            _typedString = "";
-        }
-        else
-        {
-            if (_castLevel > 1)
-            {
-                _successLevel--;
-                _currentLevelData = _skill.Data.GetSkillLevelData(--_castLevel);
-                _castString = _currentLevelData.Cast;
-            }
-        }
-
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
-        {
-            typedString = _typedString,
-            castString = _castString,
-            level = _castLevel
         });
     }
 
@@ -192,6 +156,8 @@ public class CastingSystem : Singleton<CastingSystem>
     private void EndCasting(CastingEndEventArgs args)
     {
         args.level = _castLevel;
+        args.castString = _castString;
+        args.typedString = _typedString;
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, args);
         var isPause = args.Equals(CancelEventArgs);
         EndTyping(isPause);
@@ -203,8 +169,10 @@ public class CastingSystem : Singleton<CastingSystem>
 
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, new CastingEndEventArgs
         {
-            level = _successLevel,
             skillData = _skill.Data,
+            level = _successLevel,
+            castString = _castString,
+            typedString = _typedString,
             isSuccess = true,
             resultCode = (int)CastingResultCode.Success,
         });
@@ -218,11 +186,12 @@ public class CastingSystem : Singleton<CastingSystem>
 
         GameEventSystem.Instance.Publish((int)SystemEvents.Casting, new CastingInputEventArgs
         {
+            skillData = _skill.Data,
+            level = _castLevel,
             keyString = key,
             isTypo = isTypo,
             typedString = _typedString,
             castString = _castString,
-            level = _castLevel
         });
     }
 
@@ -230,7 +199,6 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         Debug.Log($"유효 입력 발생: {latestChar}, 현재 입력 문자열: {currentString}");
 
-        _latestString = _typedString;
         _typedString = string.Empty;
         _successLevel++;
 
@@ -245,9 +213,10 @@ public class CastingSystem : Singleton<CastingSystem>
 
             GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
             {
+                skillData = _skill.Data,
+                level = _castLevel,
                 typedString = currentString,
                 castString = _castString,
-                level = _castLevel
             });
         }
     }

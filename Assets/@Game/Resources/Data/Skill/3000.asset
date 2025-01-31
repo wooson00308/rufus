@@ -17,15 +17,17 @@ MonoBehaviour:
   <DisplayName>k__BackingField: "\uD654\uC5FC\uAD6C"
   <Description>k__BackingField: 
   <Prefab>k__BackingField: {fileID: 2012760596107155170, guid: deacf1b5f3d142942ba7fc1bf50cd369, type: 3}
+  <Color>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
   <LevelDatas>k__BackingField:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
     <OverloadGage>k__BackingField: 0
-    <DisplayName>k__BackingField: "1\uC18C\uC808_\uD654\uC5FC\uAD6C"
+    <DisplayName>k__BackingField: "\uD654\uC5FC\uAD6C"
     <Description>k__BackingField: 
     <Duration>k__BackingField: 0
     <Cooltime>k__BackingField: 0
     <Cast>k__BackingField: IGNIS
+    <Color>k__BackingField: {r: 1, g: 0.5990566, b: 0.5990566, a: 1}
     <Conditions>k__BackingField:
     - {fileID: 11400000, guid: 0931b18517f667b41b8d4faf2cfacd67, type: 2}
     <ApplyFxDatas>k__BackingField: []
@@ -35,11 +37,12 @@ MonoBehaviour:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
     <OverloadGage>k__BackingField: 0
-    <DisplayName>k__BackingField: "2\uC18C\uC808_\uB2E4\uC911 \uD654\uC5FC\uAD6C"
+    <DisplayName>k__BackingField: "\uB2E4\uC911 \uD654\uC5FC\uAD6C"
     <Description>k__BackingField: 
     <Duration>k__BackingField: 0
     <Cooltime>k__BackingField: 0
     <Cast>k__BackingField: ARDENTIS ORBES
+    <Color>k__BackingField: {r: 0.9716981, g: 0.27959237, b: 0.27959237, a: 1}
     <Conditions>k__BackingField:
     - {fileID: 11400000, guid: 0931b18517f667b41b8d4faf2cfacd67, type: 2}
     <ApplyFxDatas>k__BackingField: []
