@@ -22,9 +22,11 @@ public class SystemEventArgs
 
 public class CastingSystemEventArgs : SystemEventArgs
 {
+    public SkillData skillData;
     public string typedString;
     public string castString;
-    public int level = 0;
+    public int succesLevel = 0;
+    public int castLevel = 0;
 }
 
 public class CastingStartEventArgs: CastingSystemEventArgs
@@ -40,7 +42,6 @@ public class CastingInputEventArgs : CastingSystemEventArgs
 
 public class CastingEndEventArgs: CastingSystemEventArgs
 {
-    public SkillData skillData;
     public int resultCode;
     public bool isSuccess;
 }

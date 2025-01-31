@@ -19,6 +19,8 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     public bool IsStun { get; private set; }
     public bool IsDeath { get; private set; }
 
+    private int _manaGenerationValue;
+
     public void Awake()
     {
         _owner = GetComponent<Unit>();
@@ -32,8 +34,11 @@ public class Status : MonoBehaviour, IStats, IStatSettable
     public void IntializeStats(IStats stats)
     {
         Health = new IntStat(stats.Health.Value);
+        Health.SetMaxValue(stats.Health.Value);
+        Health.SetMinValue(0);
         Mana = new IntStat(stats.Mana.Value);
         Mana.SetMaxValue(stats.Mana.Value);
+        Mana.SetMinValue(0);
         ManaRegenPerSeconds = new IntStat(stats.ManaRegenPerSeconds.Value);
         Armor = new IntStat(stats.Armor.Value);
         AttackDamage = new IntStat(stats.AttackDamage.Value);
@@ -102,6 +107,18 @@ public class Status : MonoBehaviour, IStats, IStatSettable
         IsDeath = true;
     }
 
+    public void SetManaGeneration(int value = 0)
+    {
+        if (value == 0)
+        {
+            _manaGenerationValue = ManaRegenPerSeconds.Value;
+        }
+        else
+        {
+            _manaGenerationValue = value;
+        }
+    }
+
     private IEnumerator LoopManaRegeneration()
     {
         var waitForSeconds = new WaitForSeconds(1);
@@ -112,9 +129,8 @@ public class Status : MonoBehaviour, IStats, IStatSettable
             if (_owner == null) continue;
             if (!_owner.IsActive) continue;
             if (IsDeath) continue;
-            if (Mana.Value >= Mana.Max) continue;
             
-            Mana.Update(Unit.ENGAGE_STATS_KEY, ManaRegenPerSeconds.Value);
+            Mana.Update(Unit.ENGAGE_STATS_KEY, _manaGenerationValue);
         }
     }
 }

@@ -1,10 +1,9 @@
 using System;
 using UnityEngine;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class CastingSystem : Singleton<CastingSystem>
 {
-    [SerializeField] private Database _database;
-
     private Unit _player;
     private Skill _skill;
     private SkillLevelData _currentLevelData;
@@ -14,15 +13,10 @@ public class CastingSystem : Singleton<CastingSystem>
     private bool _isCasting;
 
     private bool _isTyping = false;
+    private bool _isMaxLevel = false;
     private string _typedString = "";
     private string _castString = "";
-    private string _latestString = "";
 
-    private static readonly CastingEndEventArgs FailEventArgs = new()
-    {
-        isSuccess = false,
-        resultCode = (int)CastingResultCode.Error_FailedTyping
-    };
     private static readonly CastingEndEventArgs CancelEventArgs = new()
     {
         isSuccess = false,
@@ -64,7 +58,10 @@ public class CastingSystem : Singleton<CastingSystem>
     {
         if (!_isCasting) return;
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        bool isCastable = _player.Status.Mana.Value >= _player.Status.Mana.Max / 20;
+        bool isSuccess = _successLevel > 0;
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && isCastable && !_isMaxLevel)
         {
             _isTyping = !_isTyping;
 
@@ -80,24 +77,33 @@ public class CastingSystem : Singleton<CastingSystem>
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            if (_successLevel > 0)
+            if (isSuccess)
             {
                 SuccessCasting();
             }
         }
 
+        if (isSuccess && Input.GetKeyDown(KeyCode.Backspace))
+        {
+            RemoveTyping();
+        }
+
         if (_isTyping)
         {
+            bool isOveload = _player.Status.Mana.Value <= 0;
+
+            if (isOveload)
+            {
+                _typedString = "";
+                EndCasting(CancelEventArgs);
+                return;
+            }
+
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
                 if (Input.GetKeyDown(keyCode))
                 {
-                    if (keyCode == KeyCode.Backspace)
-                    {
-                        RemoveTyping();
-                    }
-                    // A ~ Z || 스페이스바 || . || ,
-                    else if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z || keyCode == KeyCode.Space || keyCode == KeyCode.Comma || keyCode == KeyCode.Period)
+                    if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z || keyCode == KeyCode.Space || keyCode == KeyCode.Comma || keyCode == KeyCode.Period)
                     {
                         string inputChar = keyCode.ToString();
 
@@ -134,42 +140,21 @@ public class CastingSystem : Singleton<CastingSystem>
     private void StartCasting()
     {
         _isTyping = true;
-        Debug.Log("타이핑 시작!");
 
         GameTime.TimeScale = 0.25f;
 
         _currentLevelData = _skill.Data.GetSkillLevelData(_castLevel);
         _castString = _currentLevelData.Cast;
 
+        _player.Status.SetManaGeneration(-_currentLevelData.ManaCost);
+
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingStart, new CastingStartEventArgs
         {
+            skillData = _skill.Data,
+            succesLevel = _successLevel,
+            castLevel = _castLevel,
             castString = _castString,
             typedString = _typedString,
-            level = _castLevel
-        });
-    }
-
-    private void RemoveTyping()
-    {
-        if (_typedString.Length > 0)
-        {
-            _typedString = "";
-        }
-        else
-        {
-            if (_castLevel > 1)
-            {
-                _successLevel--;
-                _currentLevelData = _skill.Data.GetSkillLevelData(--_castLevel);
-                _castString = _currentLevelData.Cast;
-            }
-        }
-
-        GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
-        {
-            typedString = _typedString,
-            castString = _castString,
-            level = _castLevel
         });
     }
 
@@ -182,16 +167,48 @@ public class CastingSystem : Singleton<CastingSystem>
             _typedString = "";
             _successLevel = 0;
             _castLevel = 1;
+            _isMaxLevel = false;
         }
-        
-        _isTyping = false;
 
-        Debug.Log("타이핑 정지!");
+        _player.Status.SetManaGeneration();
+
+        _isTyping = false;
+    }
+
+    private void RemoveTyping()
+    {
+        if (_successLevel <= 0) return;
+        _successLevel--;
+        _typedString = "";
+
+        if (_isMaxLevel)
+        {
+            _isMaxLevel = false;
+        }
+        else
+        {
+            if (_castLevel > 1)
+            {
+                _currentLevelData = _skill.Data.GetSkillLevelData(--_castLevel);
+                _castString = _currentLevelData.Cast;
+            }
+        }
+
+        GameEventSystem.Instance.Publish((int)SystemEvents.CastingRemove, new CastingInputEventArgs
+        {
+            skillData = _skill.Data,
+            typedString = _typedString,
+            castString = _castString,
+            succesLevel = _successLevel,
+            castLevel = _castLevel
+        });
     }
 
     private void EndCasting(CastingEndEventArgs args)
     {
-        args.level = _castLevel;
+        args.succesLevel = _castLevel;
+        args.castString = _castString;
+        args.typedString = _typedString;
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, args);
         var isPause = args.Equals(CancelEventArgs);
         EndTyping(isPause);
@@ -199,12 +216,13 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private void SuccessCasting()
     {
-        Debug.Log("캐스팅 성공! 성공 처리");
-
         GameEventSystem.Instance.Publish((int)SystemEvents.CastingEnd, new CastingEndEventArgs
         {
-            level = _successLevel,
             skillData = _skill.Data,
+            succesLevel = _successLevel,
+            castLevel = _castLevel,
+            castString = _castString,
+            typedString = _typedString,
             isSuccess = true,
             resultCode = (int)CastingResultCode.Success,
         });
@@ -214,41 +232,61 @@ public class CastingSystem : Singleton<CastingSystem>
 
     private void OnCastingKeyInput(string key, bool isTypo = false)
     {
-        if(isTypo) _typedString = _typedString[..^1];
+        if(isTypo)
+        {
+            _typedString = _typedString[..^1];
+
+            int overloadTypoDamage = _player.Status.Mana.Value - _currentLevelData.FailedManaCost;
+            _player.UpdateMana(-_currentLevelData.FailedManaCost);
+
+            if(overloadTypoDamage < 0)
+            {
+                overloadTypoDamage = Math.Abs(overloadTypoDamage);
+                _player.OnHit(overloadTypoDamage, _player);
+            }
+        }
 
         GameEventSystem.Instance.Publish((int)SystemEvents.Casting, new CastingInputEventArgs
         {
+            skillData = _skill.Data,
+            succesLevel = _successLevel,
+            castLevel = _castLevel,
             keyString = key,
             isTypo = isTypo,
             typedString = _typedString,
             castString = _castString,
-            level = _castLevel
         });
     }
 
     private void OnValidKeyInput(string latestChar, string currentString)
     {
-        Debug.Log($"유효 입력 발생: {latestChar}, 현재 입력 문자열: {currentString}");
-
-        _latestString = _typedString;
-        _typedString = string.Empty;
         _successLevel++;
 
-        if (_castLevel >= _skill.Level)
-        {
-            SuccessCasting();
+        if (_castLevel < _skill.Level)
+        {    
+            _castLevel++;
+
+            _typedString = string.Empty;
+
+            _isMaxLevel = false;
+            _currentLevelData = _skill.Data.GetSkillLevelData(_castLevel);
+            _player.Status.SetManaGeneration(-_currentLevelData.ManaCost);
+
+            _castString = _currentLevelData.Cast;
         }
         else
         {
-            _currentLevelData = _skill.Data.GetSkillLevelData(++_castLevel);
-            _castString = _currentLevelData.Cast;
-
-            GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
-            {
-                typedString = currentString,
-                castString = _castString,
-                level = _castLevel
-            });
+            _isMaxLevel = true;
+            EndCasting(CancelEventArgs);
         }
+
+        GameEventSystem.Instance.Publish((int)SystemEvents.CastingInput, new CastingInputEventArgs
+        {
+            skillData = _skill.Data,
+            succesLevel = _successLevel,
+            castLevel = _castLevel,
+            typedString = currentString,
+            castString = _castString,
+        });
     }
 }

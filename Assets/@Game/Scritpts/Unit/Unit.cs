@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,14 +28,18 @@ public class Unit : MonoBehaviour, IStatSettable
     private Unit _lastAttacker;
     private Unit _killer;
 
+    private int _revieCount;
+    private int _manaGenarateValue;
+
     private bool _isPlayer;
     private bool _isInitialized;
     private bool _isActive;
-    private bool _isRevive;
+
+    private bool _isProcessingManaGenarator;
 
     public bool IsInitialized => _isInitialized;
     public bool IsActive => _isActive;
-    public bool IsRevive => _isRevive;
+    public bool IsRevive => _revieCount > 0;
 
     public NavMeshAgent Agent => _agent;
 
@@ -68,7 +73,7 @@ public class Unit : MonoBehaviour, IStatSettable
 
     private void StartCasting(object args)
     {
-        if (args is not CastingStartEventArgs castingArgs) return;
+        if (args is not CastingStartEventArgs) return;
 
         _fsm.TransitionTo<CastingState>();
     }
@@ -172,6 +177,11 @@ public class Unit : MonoBehaviour, IStatSettable
         _status.UpdateStats(key, stats);
     }
 
+    public void UpdateMana(int value)
+    {
+        _status.Mana.Update(BASE_STATS_KEY, value);
+    }
+
     public void OnHit(int damage, Unit attacker)
     {
         if (Status.IsDeath) return;
@@ -202,7 +212,7 @@ public class Unit : MonoBehaviour, IStatSettable
     {
         if (Status.IsDeath) return;
 
-        if (!_isRevive)
+        if (!IsRevive)
         {
             _status.OnDeath(attacker);
 
@@ -212,6 +222,12 @@ public class Unit : MonoBehaviour, IStatSettable
 
         _fsm.TransitionTo<DeathState>();
     }
+
+    public void UpdateReviveCount(int value)
+    {
+        _revieCount += value;
+    }
+
     #endregion
 
     #region Animator

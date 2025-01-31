@@ -17,6 +17,6 @@ public class CastingEventSkillConditionData : ConditionData
         if (!args.isSuccess) return;
         if (skill.Data.Id != args.skillData.Id) return;
 
-        skill.UseSkill(args.level);
+        skill.UseSkill(args.succesLevel);
     }
 }

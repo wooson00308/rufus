@@ -25,7 +25,7 @@ public class PlayerIdleState : StateBase
             _fsm.TransitionTo<PlayerMoveState>();
         }
 
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.J))
         {
             _fsm.TransitionTo<PlayerAttackState>();
         }
