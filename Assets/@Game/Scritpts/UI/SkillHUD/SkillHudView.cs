@@ -66,7 +66,7 @@ public class SkillHudView : BaseView
         _isCasting = true;
         _isCastingStart = true;
 
-        UpdateCastingString(args.level, args.typedString, args.castString);
+        UpdateCastingString(args.castLevel, args.typedString, args.castString);
         UpdateText(Texts.CastResultText, $"영창 모드");
         GetText(Texts.CastResultText).color = Color.white;
     }
@@ -75,14 +75,8 @@ public class SkillHudView : BaseView
     {
         var args = gameEvent as CastingInputEventArgs;
 
-        if(GetText(Texts.CastingText).text != string.Empty)
-        {
-            UpdateText(Texts.CastingText, string.Empty);
-        }
-        else
-        {
-            UpdateCastingString(args.level, args.typedString, args.castString);
-        }
+        UpdateCastingString(args.castLevel, "", args.castString);
+        UpdateSkillLevelUI(args.succesLevel, args.skillData);
     }
 
     private void OnCasting(object gameEvent)
@@ -97,7 +91,7 @@ public class SkillHudView : BaseView
             _isCastingInput = false;
         }
 
-        UpdateCastingString(args.level, args.typedString, args.castString, args.isTypo);
+        UpdateCastingString(args.castLevel, args.typedString, args.castString, args.isTypo);
     }
 
     private void UpdateCastingString(int level, string typedString, string castString, bool isTypo = false)
@@ -134,13 +128,27 @@ public class SkillHudView : BaseView
     private void OnCastingInput(object gameEvent)
     {
         var args = gameEvent as CastingInputEventArgs;
+        var skillData = args.skillData;
 
-        _isCastingInput = true;
+        UpdateSkillLevelUI(args.succesLevel, skillData);
 
-        UpdateSkillLevelUI(args.level-1, args.skillData);
+        if (args.succesLevel >= args.castLevel)
+        {
+            var levelData = skillData.GetSkillLevelData(args.succesLevel);
 
-        UpdateCastingString(args.level, "", args.castString);
-        UpdateText(Texts.CastResultText, $"영창 모드");
+            UpdateText(Texts.CastingText, $"{skillData.CastResult(args.succesLevel)}");
+            GetText(Texts.CastingText).color = levelData.Color;
+
+            UpdateText(Texts.CastResultText, $"이동 모드");
+            GetText(Texts.CastResultText).color = _darkGray;
+        }
+        else
+        {
+            _isCastingInput = true;
+
+            UpdateCastingString(args.castLevel, "", args.castString);
+            UpdateText(Texts.CastResultText, $"영창 모드");
+        }
     }
 
     private void UpdateSkillLevelUI(int level = 0, SkillData data = null)
@@ -171,20 +179,18 @@ public class SkillHudView : BaseView
 
         if (args.isSuccess)
         {
-            UpdateSkillLevelUI(args.level, args.skillData);
+            UpdateSkillLevelUI(args.succesLevel, args.skillData);
 
-            var levelData = skillData.GetSkillLevelData(args.level);
+            var levelData = skillData.GetSkillLevelData(args.succesLevel);
 
+            UpdateText(Texts.CastingText, $"{levelData.DisplayName}) {skillData.CastResult(args.succesLevel)}");
             GetText(Texts.CastingText).color = levelData.Color;
-            GetText(Texts.CastResultText).color = levelData.Color;
-
-            UpdateText(Texts.CastingText, $"{levelData.DisplayName}) {skillData.CastResult(args.level)}");
 
             StartCoroutine(OnUseSkillTextClearProcess());
         }
         else
         {
-            UpdateCastingString(args.level, args.typedString, args.castString);
+            UpdateCastingString(args.succesLevel, args.typedString, args.castString);
         }
 
         UpdateText(Texts.CastResultText, $"이동 모드");
@@ -208,8 +214,8 @@ public class SkillHudView : BaseView
             yield return null;
         }
 
-        GetText(Texts.CastingText).color = Color.white;
         UpdateText(Texts.CastingText, string.Empty);
+        GetText(Texts.CastingText).color = Color.white;
         UpdateSkillLevelUI();
     }
 }

@@ -62,7 +62,8 @@ public class SkillLevelData
 {
     [field: SerializeField] public int ADRatio { get; private set; }
     [field: SerializeField] public int APRatio { get; private set; }
-    [field: SerializeField] public int OverloadGage { get; private set; }
+    [field: SerializeField] public int ManaCost { get; private set; }
+    [field: SerializeField] public int FailedManaCost { get; private set; }
     [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
     [field: SerializeField] public float Duration { get; private set; }

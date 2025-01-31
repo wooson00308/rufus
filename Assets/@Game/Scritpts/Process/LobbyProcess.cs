@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class LobbyProcess : Process
 {
+    public PlayerHudView _playerHud;
     public CinemachineCamera _camera;
     public List<SpawnConfig> _spawnConfig;
 
@@ -12,9 +14,12 @@ public class LobbyProcess : Process
 
     private Unit _player;
 
+    private bool _isLoopSpawnable;
+
     public void OnEnable()
     {
         _player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
+        _playerHud.SetPlayer(_player);
         _camera.Follow = _player.transform;
         _player.Inventory.Equip(_spawnConfig[0].item);
 
@@ -24,6 +29,39 @@ public class LobbyProcess : Process
             _player.ApplySkill(data);
         }
 
+        StartCoroutine(ProcessLoopSpawn());
+    }
+
+    public void OnDisable()
+    {
+        _isLoopSpawnable = false;
+    }
+
+    private IEnumerator ProcessLoopSpawn()
+    {
+        if (_isLoopSpawnable) yield break;
+        _isLoopSpawnable = true;
+
+        SpawnEnemy();
+
+        while (_isLoopSpawnable)
+        {
+            float time = 0;
+
+            while(time < _spawnConfig[1].delay)
+            {
+                time += GameTime.DeltaTime;
+                yield return null;
+            }
+
+            SpawnEnemy();
+
+            yield return null;
+        }
+    }
+
+    private void SpawnEnemy()
+    {
         var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, _spawnConfig[1].count, _spawnConfig[1].point.position, null, Team.Enemy);
         foreach (var enemy in enemys)
         {
@@ -44,4 +82,5 @@ public class SpawnConfig
     public UnitData unit;
     public ItemData item;
     public int count;
+    public float delay;
 }

@@ -34,21 +34,11 @@ public class PlayerAttackState : StateBase
             return;
         }
 
-        Vector3 direction;
-
-        if (unit.Target == null)
+        if (unit.Target != null)
         {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0;
-
-            direction = (mousePosition - unit.transform.position).normalized;
+            Vector3 direction = unit.Target.transform.position - unit.transform.position;
+            unit.Rotation(direction);
         }
-        else
-        {
-            direction = unit.Target.transform.position - unit.transform.position;
-        }
-
-        unit.Rotation(direction);
 
         if (unit.GetAttackState() == 0)
         {

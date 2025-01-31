@@ -21,7 +21,8 @@ MonoBehaviour:
   <LevelDatas>k__BackingField:
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
-    <OverloadGage>k__BackingField: 0
+    <ManaCost>k__BackingField: 5
+    <FailedManaCost>k__BackingField: 10
     <DisplayName>k__BackingField: "\uD654\uC5FC\uAD6C"
     <Description>k__BackingField: 
     <Duration>k__BackingField: 0
@@ -36,7 +37,8 @@ MonoBehaviour:
     <RemoveFxDatas>k__BackingField: []
   - <ADRatio>k__BackingField: 0
     <APRatio>k__BackingField: 0
-    <OverloadGage>k__BackingField: 0
+    <ManaCost>k__BackingField: 15
+    <FailedManaCost>k__BackingField: 30
     <DisplayName>k__BackingField: "\uB2E4\uC911 \uD654\uC5FC\uAD6C"
     <Description>k__BackingField: 
     <Duration>k__BackingField: 0

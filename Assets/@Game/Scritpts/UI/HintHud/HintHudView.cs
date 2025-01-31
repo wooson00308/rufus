@@ -34,6 +34,7 @@ public class HintHudView : BaseView
         GameEventSystem.Instance.Subscribe((int)SkillEvents.UseSkill, OnUseSkill);
         GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingStart, OnCastingStart);
         GameEventSystem.Instance.Subscribe((int)SystemEvents.Casting, Casting);
+        GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingRemove, OnCastingRemove);
         GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingInput, CastingInput);
         GameEventSystem.Instance.Subscribe((int)SystemEvents.CastingEnd, CastingEnd);
     }
@@ -51,6 +52,7 @@ public class HintHudView : BaseView
         else
         {
             text = $"<color=#FFFF00>[W][A][S][D]</color> - 이동\n" +
+                   $"<color=#FFFF00>[J]</color> - 기본 공격\n" +
                    $"<color=#FFFF00>[Shift]</color> - 영창 모드";
         }
 
@@ -65,7 +67,8 @@ public class HintHudView : BaseView
 
         if(_isSkillUseable)
         {
-            text += $"\n" + 
+            text += $"\n\n" +
+                $"<color=#FFFF00>[Backspace]</color> - 이전 소절\n" +
                 $"<color=#FFFF00>[Enter]</color> - <color=#{_skillColorHtmlString}>발동:{_skillDisplayName}</color>";
         }
 
@@ -79,7 +82,8 @@ public class HintHudView : BaseView
         if (Type != HintType.Control) return;
 
         string text = $"<color=#FFFF00>[W][A][S][D]</color> - 이동\n" +
-                     $"<color=#FFFF00>[Shift]</color> - 영창 모드"; ;
+                      $"<color=#FFFF00>[J]</color> - 기본 공격\n" +
+                      $"<color=#FFFF00>[Shift]</color> - 영창 모드"; ;
 
         if (args.isSuccess)
         {
@@ -87,7 +91,8 @@ public class HintHudView : BaseView
         }
         else if (_isSkillUseable)
         {
-            text += $"\n" +
+            text += $"\n\n" +
+                $"<color=#FFFF00>[Backspace]</color> - 이전 소절\n" +
                 $"<color=#FFFF00>[Enter]</color> - <color=#{_skillColorHtmlString}>발동:{_skillDisplayName}</color>";
         }
 
@@ -100,6 +105,35 @@ public class HintHudView : BaseView
         if (Type != HintType.Control) return;
     }
 
+    private void OnCastingRemove(object gameEvent)
+    {
+        if (Type != HintType.Control) return;
+
+        var args = gameEvent as CastingInputEventArgs;
+
+        string text = $"<color=#FFFF00>[W][A][S][D]</color> - 이동\n" +
+                      $"<color=#FFFF00>[J]</color> - 기본 공격\n" +
+                      $"<color=#FFFF00>[Shift]</color> - 영창 모드";
+
+        if (args.castLevel > 1)
+        {
+            var levelData = args.skillData.GetSkillLevelData(args.succesLevel);
+            _skillColorHtmlString = ColorUtility.ToHtmlStringRGB(levelData.Color);
+            _skillDisplayName = levelData.DisplayName;
+
+            text += $"\n\n" +
+                $"<color=#FFFF00>[Backspace]</color> - 이전 소절\n" +
+                $"<color=#FFFF00>[Enter]</color> - <color=#{_skillColorHtmlString}>발동:{_skillDisplayName}</color>";
+        }
+        else
+        {
+            _isSkillUseable = false;
+        }
+
+        Get<TextMeshProUGUI>((int)Texts.HintText)
+            .SetText(text);
+    }
+
     private void CastingInput(object gameEvent)
     {
         if (Type != HintType.Control) return;
@@ -107,13 +141,15 @@ public class HintHudView : BaseView
         _isSkillUseable = true;
 
         var args = gameEvent as CastingInputEventArgs;
-        var levelData = args.skillData.GetSkillLevelData(args.level-1);
+        var levelData = args.skillData.GetSkillLevelData(args.succesLevel);
 
         _skillColorHtmlString = ColorUtility.ToHtmlStringRGB(levelData.Color);
         _skillDisplayName = levelData.DisplayName;
 
         Get<TextMeshProUGUI>((int)Texts.HintText)
             .SetText($"<color=#FFFF00>[Shift]</color> - 이동 모드\n" +
+                     $"\n" +
+                     $"<color=#FFFF00>[Backspace]</color> - 이전 소절\n" +
                      $"<color=#FFFF00>[Enter]</color> - <color=#{_skillColorHtmlString}>발동:{_skillDisplayName}</color>");
     }
 }
