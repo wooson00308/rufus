@@ -14,7 +14,13 @@ public class ProcessSystem : SingletonMini<ProcessSystem>
         foreach (var process in _processList)
         {
             process.Initialized(this);
+            process.SetActive(false);
         }
+
+        var firstProcess = _processList.First();
+
+        _prevProcess = firstProcess;
+        firstProcess.SetActive(true);
     }
 
     public void OnNextProcess<T>() where T : Process
