@@ -38,4 +38,15 @@ public class ProcessSystem : SingletonMini<ProcessSystem>
 
         _prevProcess = process;
     }
+
+    public T Get<T>() where T : Process
+    {
+        Process process = _processList.Find(x => x is T);
+        if (process == null)
+        {
+            Debug.LogError($"{typeof(T)} not found");
+            return null;
+        }
+        return process as T;
+    }
 }

@@ -40,6 +40,7 @@ public class Unit : MonoBehaviour, IStatSettable
     public bool IsInitialized => _isInitialized;
     public bool IsActive => _isActive;
     public bool IsRevive => _revieCount > 0;
+    public bool IsPlayer => _isPlayer;
 
     public NavMeshAgent Agent => _agent;
 

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7636369fea35864a8ddaee2af975191, type: 3}
-  m_Name: ReadyStart
+  m_Name: LobbyPortal
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 0
   <Name>k__BackingField: 
@@ -25,4 +25,5 @@ MonoBehaviour:
   <EnterFxDatas>k__BackingField:
   - {fileID: 11400000, guid: 8d012db9d2033ea4bbad18ca2aad7333, type: 2}
   <StayFxDatas>k__BackingField: []
-  <ExitFxDatas>k__BackingField: []
+  <ExitFxDatas>k__BackingField:
+  - {fileID: 11400000, guid: 51b6bc41cc714a4499ac9bb02846a481, type: 2}

@@ -13,9 +13,15 @@ public class EngageProcess : Process
         base.SetActive(value);
         if(value)
         {
-            var player = UnitFactory.Instance.GetAllActiveUnitsInTeam(Team.Friendly)[0];
+            GameEventSystem.Instance.Subscribe((int)UnitEvents.Death, OnPlayerDeath);
+            var player = GameFactory.Instance.GetAllActiveUnitsInTeam(Team.Friendly)[0];
             player.transform.position = _spawnPoint.position;
             StartCoroutine(ProcessLoopSpawn());
+        }
+        else
+        {
+            GameFactory.Instance.ClearAllUnits();
+            GameFactory.Instance.ClearAllProjectiles();
         }
     }
 
@@ -47,9 +53,18 @@ public class EngageProcess : Process
         }
     }
 
+    private void OnPlayerDeath(object gameEvent)
+    {
+        var args = gameEvent as UnitEventArgs;
+        if(args.publisher.IsPlayer)
+        {
+            _processSystem.OnNextProcess<LobbyProcess>();
+        }
+    }
+
     private void SpawnEnemy()
     {
-        var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig.unit, _spawnConfig.count, _spawnConfig.point.position, null, Team.Enemy);
+        var enemys = GameFactory.Instance.CreateUnits(_spawnConfig.unit, _spawnConfig.count, _spawnConfig.point.position, null, Team.Enemy);
         foreach (var enemy in enemys)
         {
             var item = _spawnConfig.item;

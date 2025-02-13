@@ -52,22 +52,19 @@ public class UnitAnimator : MonoBehaviour
         var projectileData = weaponData.ProjectileData;
         if(projectileData == null) return;
 
-        var projectilePrefab = ResourceManager.Instance.Spawn(projectileData.Prefab.gameObject);
-        if(projectilePrefab == null) return;
-
-        var projectile = projectilePrefab.GetComponent<Projectile>();
+        var projectile = GameFactory.Instance.CreateProjectile(projectileData, transform.position);
         projectile.transform.position = transform.position;
 
         if (projectileData.HasHoming && _owner.Target != null)
         {
-            // Å¸°ÙÀÌ ÀÖ°í, À¯µµ±â´ÉÀÌ¸é 
+            // íƒ€ê²Ÿì´ ìˆê³ , ìœ ë„ê¸°ëŠ¥ì´ë©´ 
             projectile.SetTarget(_owner.Target.transform);
         }
         else 
         {
             Vector2 direction;
 
-            // Å¸°ÙÀÌ ¾ø°Å³ª À¯µµ±â´ÉÀÌ offÀÌ¸é
+            // íƒ€ê²Ÿì´ ì—†ê±°ë‚˜ ìœ ë„ê¸°ëŠ¥ì´ offì´ë©´
             if (_owner.Target != null)
             {
                 direction = _owner.Target.transform.position - _owner.transform.position;
@@ -115,7 +112,7 @@ public class UnitAnimator : MonoBehaviour
 
     private void OnDeath()
     {
-        UnitFactory.Instance.DestroyUnit(_owner.GetInstanceID());
+        GameFactory.Instance.DestroyUnit(_owner.GetInstanceID());
 
         GameEventSystem.Instance.Publish((int)UnitEvents.Death, new UnitEventArgs
         {
