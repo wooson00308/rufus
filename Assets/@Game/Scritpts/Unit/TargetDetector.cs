@@ -13,7 +13,7 @@ public class TargetDetector : MonoBehaviour
     {
         get
         {
-            _enemies = GameFactory.Instance.GetAllActiveUnitsInEnemy(_unit.Team);
+            _enemies = UnitFactory.Instance.GetAllActiveUnitsInEnemy(_unit.Team);
             return _detectData.Detect(_unit, _enemies);
         }
     }
@@ -25,7 +25,7 @@ public class TargetDetector : MonoBehaviour
             var target = Target;
             if (_unit.Status.AoERadius.Value <= 0) return new List<Unit>() { target };
 
-            var targets = GameFactory.Instance.GetAllActiveUnitsInAoERadius(target, _enemies, _unit.Status.AoERadius.Value);
+            var targets = UnitFactory.Instance.GetAllActiveUnitsInAoERadius(target, _enemies, _unit.Status.AoERadius.Value);
             return targets;
         }
     }

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class GameFactory : Singleton<GameFactory>
+public class UnitFactory : Singleton<UnitFactory>
 {
     private readonly Dictionary<int, Unit> _activeUnits = new();
-    private readonly Dictionary<int, Projectile> _activeProjectiles = new();
 
     /// <summary>
     /// 주어진 UnitData를 기반으로 유닛을 생성하거나 풀링하여 반환합니다.
@@ -39,35 +38,6 @@ public class GameFactory : Singleton<GameFactory>
         _activeUnits[unit.GetInstanceID()] = unit;
 
         return unit;
-    }
-
-    public Projectile CreateProjectile(ProjectileData projectileData, Vector3 spawnPosition)
-    {
-        if (projectileData == null)
-        {
-            Debug.LogError("ProjectileData가 null입니다.");
-            return null;
-        }
-
-        GameObject projectileObject = ResourceManager.Instance.Spawn(projectileData.Prefab.gameObject);
-        if (projectileObject == null)
-        {
-            Debug.LogError("투사체 프리팹 생성에 실패했습니다.");
-            return null;
-        }
-
-        Projectile projectile = projectileObject.GetComponent<Projectile>();
-        if (projectile == null)
-        {
-            Debug.LogError("생성된 프리팹에 Projectile 컴포넌트가 없습니다.");
-            return null;
-        }
-
-        projectile.transform.position = spawnPosition;
-
-        _activeProjectiles[projectile.GetInstanceID()] = projectile;
-
-        return projectile;
     }
 
     /// <summary>
@@ -116,7 +86,7 @@ public class GameFactory : Singleton<GameFactory>
         {
             _activeUnits.Remove(id);
         }
-        
+
         ResourceManager.Instance.Destroy(unit.gameObject);
     }
 
@@ -186,16 +156,10 @@ public class GameFactory : Singleton<GameFactory>
     {
         foreach (var unit in _activeUnits.Values)
         {
-            unit.OnDeath(null);
+            ResourceManager.Instance.Destroy(unit.gameObject);
         }
-    }
 
-    public void ClearAllProjectiles()
-    {
-        foreach (var projectile in _activeProjectiles.Values)
-        {
-            projectile.OnDestroyFx();
-        }
+        _activeUnits.Clear();
     }
 }
 

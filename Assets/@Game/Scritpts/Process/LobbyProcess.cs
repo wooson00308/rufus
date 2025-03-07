@@ -16,22 +16,21 @@ public class LobbyProcess : Process
     public PlayerHudView _playerHud;
     public CinemachineCamera _camera;
 
-    private Unit _player;
 
-    public bool OnTriggeredPortal { get; set; }
+    private Unit _player;
 
     public override void SetActive(bool value)
     {
         _env.SetActive(value);
         if (value)
         {
-            if (_player != null && !_player.Status.IsDeath)
+            if (_player != null)
             {
                 _player.ResetStats(Unit.ENGAGE_STATS_KEY);
             }
             else
             {
-                _player = GameFactory.Instance.CreateUnit(_playerData, _spawnPoint.position, null, Team.Friendly, true);
+                _player = UnitFactory.Instance.CreateUnit(_playerData, _spawnPoint.position, null, Team.Friendly, true);
                 _playerHud.SetPlayer(_player);
                 _camera.Follow = _player.transform;
                 _player.Inventory.Equip(itemData);
@@ -42,19 +41,13 @@ public class LobbyProcess : Process
                 }
             }
         }
-        else
-        {
-            OnTriggeredPortal = false;
-        }
 
         base.SetActive(value);
     }
 
     public void Update()
     {
-        if (!OnTriggeredPortal) return;
-
-        if(Input.GetKeyDown(KeyCode.F))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             _processSystem.OnNextProcess<ReadyProcess>();
         }

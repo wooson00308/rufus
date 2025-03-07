@@ -44,22 +44,26 @@ public class MultiShotSkillFxEventData : SkillFxEventData
     {
         if (ProjectileData == null) return;
 
-        var projectile = GameFactory.Instance.CreateProjectile(ProjectileData, owner.transform.position);
+        var projectilePrefab = ResourceManager.Instance.Spawn(ProjectileData.Prefab.gameObject);
+        if (projectilePrefab == null) return;
 
-        // 0 ~ 360ë„ ì¤‘ í•˜ë‚˜ì˜ ëœë¤ ê°ë„ êµ¬í•˜ê¸°
+        var projectile = projectilePrefab.GetComponent<Projectile>();
+        projectile.transform.position = owner.transform.position;
+
+        // 0 ~ 360µµ Áß ÇÏ³ªÀÇ ·£´ı °¢µµ ±¸ÇÏ±â
         float randomAngle = Random.Range(0f, 360f);
 
-        // ëœë¤ ê°ë„ë¥¼ Vector2ë¡œ ë³€í™˜ (íƒ‘ë‹¤ìš´ 2D ê¸°ì¤€, Zì¶• íšŒì „)
+        // ·£´ı °¢µµ¸¦ Vector2·Î º¯È¯ (Å¾´Ù¿î 2D ±âÁØ, ZÃà È¸Àü)
         Vector2 randomDirection = new(
             Mathf.Cos(randomAngle * Mathf.Deg2Rad),
             Mathf.Sin(randomAngle * Mathf.Deg2Rad)
         );
 
-        // êµ¬í•œ ë¬´ì‘ìœ„ ë°©í–¥ì„ ì„¸íŒ…
+        // ±¸ÇÑ ¹«ÀÛÀ§ ¹æÇâÀ» ¼¼ÆÃ
         projectile.SetDirection(randomDirection);
         projectile.OnFire(owner, ProjectileData);
 
-        // ì¶”í›„ í˜¸ë°(ëª©í‘œ ì¶”ì ) ê¸°ëŠ¥ì„ ì“°ë ¤ë©´, targetì´ ìœ íš¨í•  ë•Œë§Œ ì½”ë£¨í‹´ ì‹¤í–‰
+        // ÃßÈÄ È£¹Ö(¸ñÇ¥ ÃßÀû) ±â´ÉÀ» ¾²·Á¸é, targetÀÌ À¯È¿ÇÒ ¶§¸¸ ÄÚ·çÆ¾ ½ÇÇà
         if (target != null)
         {
             owner.StartCoroutine(WaitForHomingDelay(projectile, target));
