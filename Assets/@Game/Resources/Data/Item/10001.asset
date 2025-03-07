@@ -19,6 +19,10 @@ MonoBehaviour:
   <Prefab>k__BackingField: {fileID: 3749483439650533228, guid: 73de509c01f2ede4d921da7d0a5f333b, type: 3}
   <EquipType>k__BackingField: 3
   <Health>k__BackingField:
+    _value: 100
+  <Mana>k__BackingField:
+    _value: 0
+  <ManaRegenPerSeconds>k__BackingField:
     _value: 0
   <Armor>k__BackingField:
     _value: 0

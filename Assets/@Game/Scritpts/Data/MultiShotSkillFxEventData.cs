@@ -4,9 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MultiShotSkillFxEventData", menuName = "Scriptable Objects/MultiShotSkillFxEventData")]
 public class MultiShotSkillFxEventData : SkillFxEventData
 {
-    [field:SerializeField] public ProjectileData ProjectileData { get; private set; }
-    [field:SerializeField] public float HomingDelay { get; private set; }
-    [field:SerializeField] public int ProjectileCount { get; private set; }
+    [field: SerializeField] public ProjectileData ProjectileData { get; private set; }
+    [field: SerializeField] public float HomingDelay { get; private set; }
+    [field: SerializeField] public int ProjectileCount { get; private set; }
 
     public override void OnSkillEvent(Unit owner, Skill skill)
     {
@@ -50,20 +50,20 @@ public class MultiShotSkillFxEventData : SkillFxEventData
         var projectile = projectilePrefab.GetComponent<Projectile>();
         projectile.transform.position = owner.transform.position;
 
-        // 0 ~ 360µµ Áß ÇÏ³ªÀÇ ·£´ı °¢µµ ±¸ÇÏ±â
+        // 0 ~ 360ë„ ì¤‘ í•˜ë‚˜ì˜ ëœë¤ ê°ë„ ê³„ì‚°
         float randomAngle = Random.Range(0f, 360f);
 
-        // ·£´ı °¢µµ¸¦ Vector2·Î º¯È¯ (Å¾´Ù¿î 2D ±âÁØ, ZÃà È¸Àü)
+        // ëœë¤ ê°ë„ë¥¼ Vector2ë¡œ ë³€í™˜ (ì¢Œí‘œê³„ 2D ê¸°ì¤€, Zì¶• íšŒì „)
         Vector2 randomDirection = new(
             Mathf.Cos(randomAngle * Mathf.Deg2Rad),
             Mathf.Sin(randomAngle * Mathf.Deg2Rad)
         );
 
-        // ±¸ÇÑ ¹«ÀÛÀ§ ¹æÇâÀ» ¼¼ÆÃ
+        // ëœë¤ ë°©í–¥ìœ¼ë¡œ íˆ¬ì‚¬ì²´ ì„¤ì •
         projectile.SetDirection(randomDirection);
         projectile.OnFire(owner, ProjectileData);
 
-        // ÃßÈÄ È£¹Ö(¸ñÇ¥ ÃßÀû) ±â´ÉÀ» ¾²·Á¸é, targetÀÌ À¯È¿ÇÒ ¶§¸¸ ÄÚ·çÆ¾ ½ÇÇà
+        // ìœ ë„(íƒ€ê²Ÿ ì¶”ì ) ê¸°ëŠ¥ì´ í•„ìš”í•  ê²½ìš°, targetì´ ìœ íš¨í•œ ê²½ìš° ì½”ë£¨í‹´ ì‹¤í–‰
         if (target != null)
         {
             owner.StartCoroutine(WaitForHomingDelay(projectile, target));

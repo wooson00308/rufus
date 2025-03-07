@@ -7,7 +7,7 @@ public class Projectile : MonoBehaviour
     private ProjectileData _data;
     private Rigidbody2D _rigidbody;
 
-    private TriggerFx[] _triggerFxs;
+    private ProjectileTriggerFx[] _triggerFxs;
     private bool _isFired;
 
     private Transform _target;
@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour
 
     public void Awake()
     {
-        _triggerFxs = GetComponentsInChildren<TriggerFx>();
+        _triggerFxs = GetComponentsInChildren<ProjectileTriggerFx>();
         _rigidbody = GetComponent<Rigidbody2D>();
     }
 

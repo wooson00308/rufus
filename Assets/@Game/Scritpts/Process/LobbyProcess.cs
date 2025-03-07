@@ -7,70 +7,40 @@ using UnityEngine;
 public class LobbyProcess : Process
 {
     public PlayerHudView _playerHud;
+    public SpawnConfig _playerSpawnConfig;
     public CinemachineCamera _camera;
-    public List<SpawnConfig> _spawnConfig;
 
     public List<SkillData> _skillDatas;
 
     private Unit _player;
 
-    private bool _isLoopSpawnable;
-
     public void OnEnable()
     {
-        _player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
-        _playerHud.SetPlayer(_player);
-        _camera.Follow = _player.transform;
-        _player.Inventory.Equip(_spawnConfig[0].item);
+        GameEventSystem.Instance.Subscribe((int)InteractiveEvents.Portal_Enter, NextProcess);
 
-        foreach (var data in _skillDatas)
+        if(_player == null)
         {
-            _player.ApplySkill(data);
-            _player.ApplySkill(data);
-        }
+            _player = UnitFactory.Instance.CreateUnit(_playerSpawnConfig.unit, _playerSpawnConfig.point.position, null, Team.Friendly, true);
+            _player.Inventory.Equip(_playerSpawnConfig.item);
+            _playerHud.SetPlayer(_player);
+            _camera.Follow = _player.transform;
 
-        StartCoroutine(ProcessLoopSpawn());
+            foreach (var data in _skillDatas)
+            {
+                _player.ApplySkill(data);
+                _player.ApplySkill(data);
+            }
+        }
     }
 
     public void OnDisable()
     {
-        _isLoopSpawnable = false;
+        GameEventSystem.Instance.Unsubscribe((int)InteractiveEvents.Portal_Enter, NextProcess);
     }
 
-    private IEnumerator ProcessLoopSpawn()
+    private void NextProcess(object gameEvent)
     {
-        if (_isLoopSpawnable) yield break;
-        _isLoopSpawnable = true;
-
-        SpawnEnemy();
-
-        while (_isLoopSpawnable)
-        {
-            float time = 0;
-
-            while(time < _spawnConfig[1].delay)
-            {
-                time += GameTime.DeltaTime;
-                yield return null;
-            }
-
-            SpawnEnemy();
-
-            yield return null;
-        }
-    }
-
-    private void SpawnEnemy()
-    {
-        var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, _spawnConfig[1].count, _spawnConfig[1].point.position, null, Team.Enemy);
-        foreach (var enemy in enemys)
-        {
-            var item = _spawnConfig[1].item;
-            if (item)
-            {
-                enemy.Inventory.Equip(_spawnConfig[1].item);
-            }
-        }
+        _processSystem.OnNextProcess<ReadyProcess>();
     }
 }
 
