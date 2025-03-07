@@ -3549,7 +3549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Data>k__BackingField: {fileID: 11400000, guid: ab6a1d50f8bf10d4b89edc1fbab98800, type: 2}
-  _isSpanwed: 0
+  _isSpanwed: 1
 --- !u!50 &1999633211
 Rigidbody2D:
   serializedVersion: 5
