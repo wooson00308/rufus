@@ -29,43 +29,18 @@ public class TriggerFx : MonoBehaviour
     public Action<Unit, Unit> StayUnitEvent { get; set; }
     public Action<Unit, Unit> ExitUnitEvent { get; set; }
     public bool IsDestroy => _isDestroy;
-    public bool _hasNotOwner = false;
 
     public void Awake()
     {
         _model = GetComponent<TriggerFxAnimator>();
         _colliders = GetComponents<CompositeCollider2D>();
-
-        if(_hasNotOwner)
-        {
-            foreach (var fxData in Data.EnterFxDatas)
-            {
-                EnterUnitEvent += fxData.OnEventToTarget;
-            }
-
-            foreach (var fxData in Data.StayFxDatas)
-            {
-                StayUnitEvent += fxData.OnEventToTarget;
-            }
-
-            foreach (var fxData in Data.ExitFxDatas)
-            {
-                ExitUnitEvent += fxData.OnEventToTarget;
-            }
-
-            _duration = Data.Durtaion;
-            _eps = Data.EPS;
-
-            _onEventFromSelf = Data.OnEventFromSelf;
-            _onEventFromOwnerTriggerFx = Data.OnEventFromOwnerProjectile;
-        }
     }
 
     public void Initialized(Unit owner)
     {
         _owner = owner;
 
-        foreach (var fxData in Data.EnterFxDatas)
+        foreach(var fxData in Data.EnterFxDatas)
         {
             EnterUnitEvent += fxData.OnEventToTarget;
         }
@@ -98,18 +73,15 @@ public class TriggerFx : MonoBehaviour
 
     public void OnDisable()
     {
-        if(!_hasNotOwner)
-        {
-            EnterUnitEvent = null;
-            StayUnitEvent = null;
-            ExitUnitEvent = null;
+        EnterUnitEvent = null;
+        StayUnitEvent = null;
+        ExitUnitEvent = null;
 
-            _triggerCount = 0;
-            _isInitialized = false;
-            _onEventFromSelf = false;
-            _onEventFromOwnerTriggerFx = false;
-            _isDestroy = false;
-        }
+        _triggerCount = 0;
+        _isInitialized = false;
+        _onEventFromSelf = false;
+        _onEventFromOwnerTriggerFx = false;
+        _isDestroy = false;
 
         _targets.Clear();
         _canCollideIds.Clear();
@@ -165,74 +137,40 @@ public class TriggerFx : MonoBehaviour
     {
         if (!CanCollide(collision)) return;
 
-        if(_hasNotOwner)
+        if (!_isInitialized) return;
+        if(collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
+
+            EnterUnitEvent?.Invoke(_owner, target);
+
+            _targets.Add(target);
+
+            if (Data.OnDestroyEventWhenCollideUnit)
             {
-                EnterUnitEvent?.Invoke(_owner, target);
-
-                _targets.Add(target);
-
-                if (Data.OnDestroyEventWhenCollideUnit)
-                {
-                    OnDestroyEvent();
-                }
-
-                else if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
+                OnDestroyEvent();
             }
 
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
+            else if(Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
+                OnDestroyEvent();
             }
+
+            StartCoroutine(EventPerSeconds(collision));
         }
-        else
+
+        else if(collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
-            if (!_isInitialized) return;
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
+            if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
+
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
-                if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
-                if (_owner.Team == target.Team) return;
-
-                EnterUnitEvent?.Invoke(_owner, target);
-
-                _targets.Add(target);
-
-                if (Data.OnDestroyEventWhenCollideUnit)
-                {
-                    OnDestroyEvent();
-                }
-
-                else if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
+                OnDestroyEvent();
             }
 
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
-            {
-                if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
-                if (_owner.Team == triggerFx.Owner.Team) return;
-
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
-            }
+            StartCoroutine(EventPerSeconds(collision));
         }
     }
 
@@ -240,66 +178,36 @@ public class TriggerFx : MonoBehaviour
     {
         if (!CanCollide(collision)) return;
 
-        if(_hasNotOwner)
+        if (!_isInitialized) return;
+        if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
+
+            StayUnitEvent?.Invoke(_owner, target);
+
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
-                StayUnitEvent?.Invoke(_owner, target);
-
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
+                OnDestroyEvent();
             }
 
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
-            {
-                StayUnitEvent?.Invoke(_owner, target);
-
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
-            }
+            StartCoroutine(EventPerSeconds(collision));
         }
-        else
+
+        else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
-            if (!_isInitialized) return;
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
+            if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
+
+            StayUnitEvent?.Invoke(_owner, target);
+
+            if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
             {
-                if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
-                if (_owner.Team == target.Team) return;
-
-                StayUnitEvent?.Invoke(_owner, target);
-
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
+                OnDestroyEvent();
             }
 
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
-            {
-                if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
-                if (_owner.Team == triggerFx.Owner.Team) return;
-
-                StayUnitEvent?.Invoke(_owner, target);
-
-                if (Data.MaxMultiTriggerCount > 0 && ++_triggerCount >= Data.MaxMultiTriggerCount)
-                {
-                    OnDestroyEvent();
-                }
-
-                StartCoroutine(EventPerSeconds(collision));
-            }
+            StartCoroutine(EventPerSeconds(collision));
         }
-        
     }
 
     private IEnumerator EventPerSeconds(Collider2D coll)
@@ -322,41 +230,23 @@ public class TriggerFx : MonoBehaviour
     {
         if (!CanCollide(collision)) return;
 
-        if(_hasNotOwner)
+        if (!_isInitialized) return;
+        if (collision.TryGetComponent(out Unit target) && target.IsActive)
         {
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
-            {
-                ExitUnitEvent?.Invoke(_owner, target);
+            if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
+            if (_owner.Team == target.Team) return;
 
-                _targets.Remove(target);
-            }
+            ExitUnitEvent?.Invoke(_owner, target);
 
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
-            {
-                //TODO
-            }
+            _targets.Remove(target);
         }
-        else
+
+        else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
         {
-            if (!_isInitialized) return;
-            if (collision.TryGetComponent(out Unit target) && target.IsActive)
-            {
-                if (!_onEventFromSelf && _owner.EqualsUnit(target)) return;
-                if (_owner.Team == target.Team) return;
+            if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
+            if (_owner.Team == triggerFx.Owner.Team) return;
 
-                ExitUnitEvent?.Invoke(_owner, target);
-
-                _targets.Remove(target);
-            }
-
-            else if (collision.TryGetComponent(out TriggerFx triggerFx) && triggerFx.gameObject.activeSelf)
-            {
-                if (!_onEventFromOwnerTriggerFx && triggerFx.Owner.EqualsUnit(_owner)) return;
-                if (_owner.Team == triggerFx.Owner.Team) return;
-
-                //TODO
-            }
+            //TODO
         }
-        
     }
 }

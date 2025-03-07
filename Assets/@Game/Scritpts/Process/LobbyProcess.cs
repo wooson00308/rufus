@@ -6,50 +6,81 @@ using UnityEngine;
 
 public class LobbyProcess : Process
 {
-    public GameObject _env;
-
-    public UnitData _playerData;
-    public ItemData itemData;
-    public List<SkillData> _skillDatas;
-    
-    public Transform _spawnPoint;
     public PlayerHudView _playerHud;
     public CinemachineCamera _camera;
+    public List<SpawnConfig> _spawnConfig;
 
+    public List<SkillData> _skillDatas;
 
     private Unit _player;
 
-    public override void SetActive(bool value)
-    {
-        _env.SetActive(value);
-        if (value)
-        {
-            if (_player != null)
-            {
-                _player.ResetStats(Unit.ENGAGE_STATS_KEY);
-            }
-            else
-            {
-                _player = UnitFactory.Instance.CreateUnit(_playerData, _spawnPoint.position, null, Team.Friendly, true);
-                _playerHud.SetPlayer(_player);
-                _camera.Follow = _player.transform;
-                _player.Inventory.Equip(itemData);
+    private bool _isLoopSpawnable;
 
-                foreach (var data in _skillDatas)
-                {
-                    _player.ApplySkill(data);
-                }
-            }
+    public void OnEnable()
+    {
+        _player = UnitFactory.Instance.CreateUnit(_spawnConfig[0].unit, _spawnConfig[0].point.position, null, Team.Friendly, true);
+        _playerHud.SetPlayer(_player);
+        _camera.Follow = _player.transform;
+        _player.Inventory.Equip(_spawnConfig[0].item);
+
+        foreach (var data in _skillDatas)
+        {
+            _player.ApplySkill(data);
+            _player.ApplySkill(data);
         }
 
-        base.SetActive(value);
+        StartCoroutine(ProcessLoopSpawn());
     }
 
-    public void Update()
+    public void OnDisable()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        _isLoopSpawnable = false;
+    }
+
+    private IEnumerator ProcessLoopSpawn()
+    {
+        if (_isLoopSpawnable) yield break;
+        _isLoopSpawnable = true;
+
+        SpawnEnemy();
+
+        while (_isLoopSpawnable)
         {
-            _processSystem.OnNextProcess<ReadyProcess>();
+            float time = 0;
+
+            while(time < _spawnConfig[1].delay)
+            {
+                time += GameTime.DeltaTime;
+                yield return null;
+            }
+
+            SpawnEnemy();
+
+            yield return null;
         }
     }
+
+    private void SpawnEnemy()
+    {
+        var enemys = UnitFactory.Instance.CreateUnits(_spawnConfig[1].unit, _spawnConfig[1].count, _spawnConfig[1].point.position, null, Team.Enemy);
+        foreach (var enemy in enemys)
+        {
+            var item = _spawnConfig[1].item;
+            if (item)
+            {
+                enemy.Inventory.Equip(_spawnConfig[1].item);
+            }
+        }
+    }
+}
+
+
+[Serializable]
+public class SpawnConfig
+{
+    public Transform point;
+    public UnitData unit;
+    public ItemData item;
+    public int count;
+    public float delay;
 }
